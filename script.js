@@ -1,416 +1,250 @@
-// script.js
+// --- Inicialização do Mapa Leaflet ---
+const map = L.map('map').setView([20, 0], 2);
 
-const countriesData = [
-  {
+// Adiciona camada base (OpenStreetMap)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors',
+  maxZoom: 6,
+}).addTo(map);
+
+// Dados dos países com informações ambientais e espécies
+const countriesData = {
+  brazil: {
     name: "Brasil",
-    latlng: [-14.235, -51.9253],
-    co2: 200,
-    trees: 500,
-    biodiversity: 900,
-    species: [
-      {
-        name: "Onça-pintada",
-        scientific: "Panthera onca",
-        status: "Vulnerável",
-        region: "Amazônia",
-        color: "#e67e22",
-      },
-      {
-        name: "Mico-leão-dourado",
-        scientific: "Leontopithecus rosalia",
-        status: "Criticamente em perigo",
-        region: "Mata Atlântica",
-        color: "#c0392b",
-      },
+    continent: "southamerica",
+    coords: [-14.2350, -51.9253],
+    treeCoverage: 58, // em %
+    treeGrowthAnnual: 0.3, // % ao ano
+    biodiversityIndex: 85,
+    threatenedSpecies: [
+      {name: "Onça-pintada", link: "https://pt.wikipedia.org/wiki/Onça-pintada"},
+      {name: "Arara-azul", link: "https://pt.wikipedia.org/wiki/Arara-azul"},
+      {name: "Mico-leão-dourado", link: "https://pt.wikipedia.org/wiki/Mico-leão-dourado"},
     ],
   },
-  {
+  usa: {
     name: "Estados Unidos",
-    latlng: [37.0902, -95.7129],
-    co2: 400,
-    trees: 300,
-    biodiversity: 700,
-    species: [
-      {
-        name: "Águia-careca",
-        scientific: "Haliaeetus leucocephalus",
-        status: "Pouco preocupante",
-        region: "Norte da América",
-        color: "#27ae60",
-      },
+    continent: "northamerica",
+    coords: [37.0902, -95.7129],
+    treeCoverage: 33,
+    treeGrowthAnnual: 0.2,
+    biodiversityIndex: 75,
+    threatenedSpecies: [
+      {name: "Águia-careca", link: "https://pt.wikipedia.org/wiki/Águia-careca"},
+      {name: "Lobo-cinzento", link: "https://pt.wikipedia.org/wiki/Lobo-cinzento"},
+      {name: "Puma", link: "https://pt.wikipedia.org/wiki/Puma"},
     ],
   },
-  {
+  india: {
     name: "Índia",
-    latlng: [20.5937, 78.9629],
-    co2: 350,
-    trees: 450,
-    biodiversity: 850,
-    species: [
-      {
-        name: "Tigre-de-bengala",
-        scientific: "Panthera tigris tigris",
-        status: "Em perigo",
-        region: "Florestas Indianas",
-        color: "#d35400",
-      },
+    continent: "asia",
+    coords: [20.5937, 78.9629],
+    treeCoverage: 24,
+    treeGrowthAnnual: 0.5,
+    biodiversityIndex: 80,
+    threatenedSpecies: [
+      {name: "Tigre-de-bengala", link: "https://pt.wikipedia.org/wiki/Tigre-de-bengala"},
+      {name: "Elefante-asiático", link: "https://pt.wikipedia.org/wiki/Elefante-asiático"},
+      {name: "Pangolim", link: "https://pt.wikipedia.org/wiki/Pangolim"},
     ],
   },
-];
+  southafrica: {
+    name: "África do Sul",
+    continent: "africa",
+    coords: [-30.5595, 22.9375],
+    treeCoverage: 7,
+    treeGrowthAnnual: 0.1,
+    biodiversityIndex: 70,
+    threatenedSpecies: [
+      {name: "Rinoceronte-negro", link: "https://pt.wikipedia.org/wiki/Rinoceronte-negro"},
+      {name: "Leopardo", link: "https://pt.wikipedia.org/wiki/Leopardo"},
+      {name: "Hiena-malhada", link: "https://pt.wikipedia.org/wiki/Hiena-malhada"},
+    ],
+  },
+  australia: {
+    name: "Austrália",
+    continent: "oceania",
+    coords: [-25.2744, 133.7751],
+    treeCoverage: 17,
+    treeGrowthAnnual: 0.15,
+    biodiversityIndex: 77,
+    threatenedSpecies: [
+      {name: "Canguru-vermelho", link: "https://pt.wikipedia.org/wiki/Canguru-vermelho"},
+      {name: "Diabo-da-tasmânia", link: "https://pt.wikipedia.org/wiki/Diabo-da-tasmânia"},
+      {name: "Cacatua", link: "https://pt.wikipedia.org/wiki/Cacatua"},
+    ],
+  },
+  canada: {
+    name: "Canadá",
+    continent: "northamerica",
+    coords: [56.1304, -106.3468],
+    treeCoverage: 38,
+    treeGrowthAnnual: 0.25,
+    biodiversityIndex: 72,
+    threatenedSpecies: [
+      {name: "Caribu", link: "https://pt.wikipedia.org/wiki/Caribu"},
+      {name: "Lobo-do-árctico", link: "https://pt.wikipedia.org/wiki/Lobo-do-árctico"},
+      {name: "Ursos-pardos", link: "https://pt.wikipedia.org/wiki/Ursos-pardos"},
+    ],
+  }
+};
 
-let map, markers = [], currentCountry = null;
+// --- Referências DOM ---
+const speciesList = document.getElementById('species-list');
+const globalList = document.getElementById('global-list');
+const treeCoverageChartCtx = document.getElementById('treeCoverageChart').getContext('2d');
+const biodiversityChartCtx = document.getElementById('biodiversityChart').getContext('2d');
 
-function initMap() {
-  map = L.map("map").setView([20, 0], 2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors',
-  }).addTo(map);
+const modeToggle = document.getElementById('mode-toggle');
+const themeSelect = document.getElementById('theme-select');
 
-  countriesData.forEach((country) => {
-    const marker = L.circleMarker(country.latlng, {
-      radius: 10,
-      fillColor: "#2e8b57",
-      color: "#1b4d3e",
-      weight: 2,
-      fillOpacity: 0.8,
-    })
-      .addTo(map)
-      .bindTooltip(country.name)
-      .on("click", () => selectCountry(country));
+// --- Estado Atual ---
+let currentCountryKey = 'brazil';  // Brasil é padrão
+let currentMode = 'light';         // modo claro por padrão
 
-    markers.push(marker);
+// --- Atualiza Mapa e Dados ---
+function updateCountryData(key) {
+  const country = countriesData[key];
+  if (!country) return;
+
+  currentCountryKey = key;
+
+  // Atualiza centro do mapa
+  map.setView(country.coords, 4);
+
+  // Atualiza lista de espécies
+  speciesList.innerHTML = '';
+  country.threatenedSpecies.forEach(species => {
+    const item = document.createElement('div');
+    item.className = 'species-item';
+    item.innerHTML = `<a href="${species.link}" target="_blank">${species.name}</a>`;
+    speciesList.appendChild(item);
   });
-}
 
-function selectCountry(country) {
-  currentCountry = country;
-  map.setView(country.latlng, 5);
-
-  document.getElementById("country-name").textContent = country.name;
-  const speciesList = document.getElementById("species-list");
-  speciesList.innerHTML = "";
-
-  country.species.forEach((sp) => {
-    const div = document.createElement("div");
-    div.className = "species-item";
-    div.innerHTML = `
-      <div class="species-name">${sp.name}</div>
-      <div class="species-scientific">${sp.scientific}</div>
-      <div class="species-status" style="color:${sp.color}">Status: ${sp.status}</div>
-      <div class="species-region">Região: ${sp.region}</div>
-    `;
-    speciesList.appendChild(div);
-  });
-
+  // Atualiza gráficos
   updateCharts(country);
+
+  // Atualiza tema por continente
+  updateTheme(country.continent);
 }
 
-let chartCo2, chartTrees, chartBiodiversity;
+// --- Atualiza Tema Regional ---
+function updateTheme(continent) {
+  // Remove todas as classes de tema existentes
+  document.body.classList.remove(
+    'theme-southamerica',
+    'theme-africa',
+    'theme-asia',
+    'theme-europe',
+    'theme-northamerica',
+    'theme-oceania'
+  );
 
-function createCharts() {
-  chartCo2 = new Chart(document.getElementById("chartCo2"), {
-    type: "bar",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Emissão CO₂",
-        data: countriesData.map(c => c.co2),
-        backgroundColor: "#27ae60",
-      }],
-    },
-    options: { responsive: true, plugins: { legend: { display: false } } },
-  });
+  // Mapeia continentes para as classes
+  const continentMap = {
+    southamerica: 'theme-southamerica',
+    africa: 'theme-africa',
+    asia: 'theme-asia',
+    europe: 'theme-europe',
+    northamerica: 'theme-northamerica',
+    oceania: 'theme-oceania'
+  };
 
-  chartTrees = new Chart(document.getElementById("chartTrees"), {
-    type: "line",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Cobertura de árvores",
-        data: countriesData.map(c => c.trees),
-        backgroundColor: "rgba(46,139,87,0.5)",
-        borderColor: "#2e8b57",
-        fill: true,
-      }],
-    },
-    options: { responsive: true },
-  });
-
-  chartBiodiversity = new Chart(document.getElementById("chartBiodiversity"), {
-    type: "radar",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Biodiversidade",
-        data: countriesData.map(c => c.biodiversity),
-        backgroundColor: "rgba(39,174,96,0.4)",
-        borderColor: "#27ae60",
-      }],
-    },
-    options: { responsive: true },
-  });
+  if (continentMap[continent]) {
+    document.body.classList.add(continentMap[continent]);
+    themeSelect.value = continent;
+  }
 }
+
+// --- Alterna modo claro/escuro ---
+function toggleMode() {
+  if (currentMode === 'light') {
+    document.body.classList.add('dark-mode');
+    currentMode = 'dark';
+    modeToggle.textContent = 'Modo Claro';
+  } else {
+    document.body.classList.remove('dark-mode');
+    currentMode = 'light';
+    modeToggle.textContent = 'Modo Escuro';
+  }
+}
+
+// --- Atualiza gráficos Chart.js ---
+let treeCoverageChart, biodiversityChart;
 
 function updateCharts(country) {
-  // Atualização customizada se quiser destacar país
-}
+  const labels = [country.name];
+  const treeData = [country.treeCoverage];
+  const biodiversityData = [country.biodiversityIndex];
 
-function setupSearch() {
-  document.getElementById("search-country").addEventListener("input", e => {
-    const query = e.target.value.toLowerCase();
-    markers.forEach((marker, i) => {
-      countriesData[i].name.toLowerCase().includes(query)
-        ? marker.addTo(map)
-        : map.removeLayer(marker);
-    });
+  if(treeCoverageChart) treeCoverageChart.destroy();
+  if(biodiversityChart) biodiversityChart.destroy();
+
+  treeCoverageChart = new Chart(treeCoverageChartCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '% Cobertura de Árvores',
+        data: treeData,
+        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+        borderColor: 'rgba(76, 175, 80, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 100 } },
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
   });
 
-  document.getElementById("search-species").addEventListener("input", e => {
-    const query = e.target.value.toLowerCase();
-    const filtered = countriesData.filter(country =>
-      country.species.some(sp =>
-        sp.name.toLowerCase().includes(query) || sp.status.toLowerCase().includes(query)
-      )
-    );
-    markers.forEach((marker, i) => {
-      filtered.includes(countriesData[i])
-        ? marker.addTo(map)
-        : map.removeLayer(marker);
-    });
-  });
-}
-
-function setupDarkMode() {
-  const btn = document.getElementById("mode-toggle");
-  const icon = btn.querySelector("i");
-  btn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    icon.classList.toggle("fa-sun");
-    icon.classList.toggle("fa-moon");
-  });
-}
-
-function createLegend() {
-  const legend = document.getElementById("legend");
-  const statuses = [
-    { label: "Criticamente em perigo", color: "#c0392b" },
-    { label: "Em perigo", color: "#d35400" },
-    { label: "Vulnerável", color: "#e67e22" },
-    { label: "Pouco preocupante", color: "#27ae60" },
-  ];
-  statuses.forEach((s) => {
-    const div = document.createElement("div");
-    div.className = "legend-item";
-    div.innerHTML = `<div class="legend-color" style="background-color:${s.color};"></div><span>${s.label}</span>`;
-    legend.appendChild(div);
+  biodiversityChart = new Chart(biodiversityChartCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Índice de Biodiversidade',
+        data: biodiversityData,
+        backgroundColor: 'rgba(33, 150, 243, 0.7)',
+        borderColor: 'rgba(33, 150, 243, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 100 } },
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// --- Popula lista global lateral ---
+function populateGlobalList() {
+  globalList.innerHTML = '';
+  for (const key in countriesData) {
+    const country = countriesData[key];
+    const div = document.createElement('div');
+    div.className = 'species-item';
+    div.textContent = country.name;
+    div.style.cursor = 'pointer';
+    div.onclick = () => updateCountryData(key);
+    globalList.appendChild(div);
+  }
+}
 
-// Dados por país (mesmo que antes)
-const countriesData = [
-  /* ... como antes ... */
-];
+// --- Eventos ---
+modeToggle.addEventListener('click', toggleMode);
 
-// Lista global de espécies ameaçadas
-const globalThreatenedSpecies = [
-  { name: "Tigre", scientific: "Panthera tigris", status: "Em Perigo", region: "Ásia", color: "#d32f2f" },
-  { name: "Elefante-Africano", scientific: "Loxodonta africana", status: "Vulnerável", region: "África", color: "#f57c00" },
-  { name: "Urso Polar", scientific: "Ursus maritimus", status: "Vulnerável", region: "Ártico", color: "#0288d1" },
-  { name: "Panda Gigante", scientific: "Ailuropoda melanoleuca", status: "Vulnerável", region: "China", color: "#7b1fa2" },
-  { name: "Arraia Manta", scientific: "Mobula birostris", status: "Em Perigo", region: "Oceania", color: "#00796b" }
-];
-
-// Dados simulados de árvores e clima por país
-countriesData.forEach(c => {
-  c.treesYearly = c.trees * 1.1;  // exemplo: aumento de 10%
-  c.temperature = Math.round(Math.random() * 15 + 10);  // temp média
+themeSelect.addEventListener('change', (e) => {
+  const selectedContinent = e.target.value;
+  // Busca o primeiro país do continente selecionado para atualizar o mapa
+  const firstCountry = Object.entries(countriesData).find(([k, v]) => v.continent === selectedContinent);
+  if (firstCountry) {
+    updateCountryData(firstCountry[0]);
+  }
 });
 
-let map, markers = [], currentCountry = null;
-let chartCo2, chartTrees, chartBiodiversity, chartClimate;
-
-function initMap() {
-  map = L.map("map").setView([20,0],2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  countriesData.forEach(country => {
-    const marker = L.circleMarker(country.latlng, {
-      radius: 10,
-      fillColor: "#2e8b57",
-      color: "#1b4d3e",
-      weight: 2,
-      fillOpacity: 0.8,
-    }).addTo(map)
-      .bindTooltip(country.name)
-      .on("click", () => selectCountry(country));
-
-    markers.push(marker);
-  });
-}
-
-function selectCountry(country) {
-  currentCountry = country;
-  map.setView(country.latlng, 5);
-  document.getElementById("country-name").textContent = country.name;
-
-  const speciesList = document.getElementById("species-list");
-  speciesList.innerHTML = "";
-  country.species.forEach(sp => {
-    const div = document.createElement("div");
-    div.className = "species-item";
-    div.innerHTML = `
-      <div class="species-name">${sp.name}</div>
-      <div class="species-scientific">${sp.scientific}</div>
-      <div class="species-status" style="color:${sp.color}">Status: ${sp.status}</div>
-      <div class="species-region">Região: ${sp.region}</div>
-    `;
-    speciesList.appendChild(div);
-  });
-
-  updateCharts(country);
-}
-
-function displayGlobalSpecies() {
-  const container = document.getElementById("global-list");
-  container.innerHTML = "";
-  globalThreatenedSpecies.forEach(sp => {
-    const div = document.createElement("div");
-    div.className = "species-item";
-    div.innerHTML = `
-      <div class="species-name">${sp.name}</div>
-      <div class="species-scientific">${sp.scientific}</div>
-      <div class="species-status" style="color:${sp.color}">${sp.status}</div>
-      <div class="species-region">${sp.region}</div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function createCharts() {
-  // CO2
-  chartCo2 = new Chart(document.getElementById("chartCo2"), {
-    type: "bar",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Emissão CO₂",
-        data: countriesData.map(c => c.co2),
-        backgroundColor: "#27ae60",
-      }],
-    },
-    options: { responsive: true, plugins: { legend: { display: false } } },
-  });
-
-  // Árvores (anual)
-  chartTrees = new Chart(document.getElementById("chartTrees"), {
-    type: "line",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Árvores (total e anual)",
-        data: countriesData.map(c => c.trees),
-        borderColor: "#2e8b57", backgroundColor: "rgba(46,139,87,0.5)",
-        fill: true,
-      }, {
-        label: "Árvores (ano seguinte)",
-        data: countriesData.map(c => Math.round(c.treesYearly)),
-        borderColor: "#145214", backgroundColor: "rgba(20,82,20,0.3)",
-        fill: true,
-      }]
-    },
-    options: { responsive: true },
-  });
-
-  // Biodiversidade
-  chartBiodiversity = new Chart(document.getElementById("chartBiodiversity"), {
-    type: "radar",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Biodiversidade",
-        data: countriesData.map(c => c.biodiversity),
-        backgroundColor: "rgba(39,174,96,0.4)",
-        borderColor: "#27ae60"
-      }]
-    },
-    options: { responsive: true },
-  });
-
-  // Clima (temperatura)
-  chartClimate = new Chart(document.createElement("canvas"), {
-    type: "bar",
-    data: {
-      labels: countriesData.map(c => c.name),
-      datasets: [{
-        label: "Temp. média (°C)",
-        data: countriesData.map(c => c.temperature),
-        backgroundColor: "#f39c12",
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } } },
-  });
-  document.getElementById("charts").appendChild(chartClimate.canvas);
-}
-
-function updateCharts(country) {
-  const idx = countriesData.findIndex(c => c.name === country.name);
-  chartCo2.data.datasets[0].backgroundColor = countriesData.map((_, i) => i === idx ? "#f39c12" : "#27ae60");
-  chartCo2.update();
-
-  chartTrees.data.datasets.forEach(ds => {
-    ds.backgroundColor = ds.backgroundColor.map ? ds.backgroundColor.map((c, i) => i === idx ? "#f39c12" : c) : ds.backgroundColor;
-  });
-  chartTrees.update();
-}
-
-function setupSearch() {
-  document.getElementById("search-country").oninput = e => {
-    const q = e.target.value.toLowerCase();
-    markers.forEach((m,i) => {
-      countriesData[i].name.toLowerCase().includes(q) ? m.addTo(map): map.removeLayer(m);
-    });
-  };
-  document.getElementById("search-species").oninput = e => {
-    const q = e.target.value.toLowerCase();
-    countriesData.forEach((c,i) => {
-      const ok = c.species.some(sp => sp.name.toLowerCase().includes(q) || sp.status.toLowerCase().includes(q));
-      ok ? markers[i].addTo(map) : map.removeLayer(markers[i]);
-    });
-  };
-}
-
-function setupDarkMode() {
-  const btn = document.getElementById("mode-toggle");
-  const icon = btn.querySelector("i");
-  btn.onclick = () => {
-    document.body.classList.toggle("dark-mode");
-    icon.classList.toggle("fa-sun");
-    icon.classList.toggle("fa-moon");
-  };
-}
-
-function createLegend() {
-  const legend = document.getElementById("legend");
-  [{"Criticamente em perigo":"#c0392b"},{"Em perigo":"#d35400"},{"Vulnerável":"#e67e22"},{"Pouco preocupante":"#27ae60"}]
-    .forEach(o=>{
-      const label = Object.keys(o)[0], color = o[label];
-      const div = document.createElement("div");
-      div.className = "legend-item";
-      div.innerHTML = `<div class="legend-color" style="background:${color}"></div><span>${label}</span>`;
-      legend.appendChild(div);
-    });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  initMap();
-  displayGlobalSpecies();
-  createCharts();
-  setupSearch();
-  setupDarkMode();
-  createLegend();
-});
-
+// Inicialização
+populateGlobalList();
+updateCountryData(currentCountryKey);
