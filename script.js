@@ -1,10 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Dados
-  const countries = ["Brasil", "Argentina", "Chile", "Peru"];
-  const co2Data = [150, 90, 60, 45];
-  const treesData = [8000, 4200, 3600, 2900];
+  // Inicializar mapa Leaflet
+  const map = L.map("map").setView([-15, -55], 4); // Centro aproximado do Brasil
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contribuidores',
+  }).addTo(map);
+
+  // Exemplo de países com marcador
+  const countries = [
+    { name: "Brasil", coords: [-15, -47], co2: 150, trees: 8000, biodiversity: 85 },
+    { name: "Argentina", coords: [-34, -64], co2: 90, trees: 4200, biodiversity: 70 },
+    { name: "Chile", coords: [-33, -70], co2: 60, trees: 3600, biodiversity: 55 },
+    { name: "Peru", coords: [-9, -75], co2: 45, trees: 2900, biodiversity: 60 }
+  ];
+
+  countries.forEach(c => {
+    L.circleMarker(c.coords, {
+      radius: 8,
+      color: "#2e7d32",
+      fillColor: "#66bb6a",
+      fillOpacity: 0.8
+    })
+      .addTo(map)
+      .bindPopup(`<strong>${c.name}</strong><br>CO₂: ${c.co2}<br>Árvores: ${c.trees}<br>Biodiversidade: ${c.biodiversity}`);
+  });
+
+  // Agora carregue os gráficos normalmente abaixo…
+  const countryNames = countries.map(c => c.name);
+  const co2Data = countries.map(c => c.co2);
+  const treesData = countries.map(c => c.trees);
   const treesNextYear = treesData.map(t => Math.round(t * 1.1));
-  const biodiversityData = [85, 70, 55, 60];
+  const biodiversityData = countries.map(c => c.biodiversity);
+
+  // [continua com os gráficos aqui, igual antes...]
 
   // Configuração global do Chart.js
   Chart.defaults.animation.duration = 1000;
