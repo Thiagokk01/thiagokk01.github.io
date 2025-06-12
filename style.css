@@ -1,351 +1,333 @@
-// Script principal do EcoTracker PRO
-// Responsável pelo mapa, gráficos, filtros, modo claro/escuro
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Variáveis globais
-  let map, countryLayer;
-  let currentCountry = null;
+body {
+  background-color: #e8f5e9;
+  color: #2c3e50;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-  // Dados simulados para 5 países
-  const countriesData = {
-    Brazil: {
-      co2: [1500, 1400, 1300, 1200, 1100],
-      trees: [5000, 5200, 5300, 5400, 5500],
-      biodiversity: [2000, 2100, 2200, 2300, 2400],
-    },
-    USA: {
-      co2: [5000, 4900, 4800, 4700, 4600],
-      trees: [3000, 3100, 3200, 3300, 3400],
-      biodiversity: [1500, 1400, 1300, 1200, 1100],
-    },
-    Canada: {
-      co2: [1000, 980, 960, 940, 920],
-      trees: [6000, 6100, 6200, 6300, 6400],
-      biodiversity: [800, 850, 900, 950, 1000],
-    },
-    India: {
-      co2: [2000, 1900, 1850, 1800, 1750],
-      trees: [2500, 2600, 2700, 2800, 2900],
-      biodiversity: [900, 920, 940, 960, 980],
-    },
-    Australia: {
-      co2: [800, 780, 770, 760, 750],
-      trees: [1500, 1520, 1530, 1540, 1550],
-      biodiversity: [700, 710, 720, 730, 740],
-    },
-  };
+.header {
+  background-color: #27ae60;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
 
-  // Espécies ameaçadas simuladas
-  const threatenedSpecies = [
-    {
-      name: 'Tigre-da-bengala',
-      scientific: 'Panthera tigris tigris',
-      status: 'Criticamente em perigo',
-      region: 'Ásia',
-      color: '#d9534f',
-    },
-    {
-      name: 'Tartaruga-de-couro',
-      scientific: 'Dermochelys coriacea',
-      status: 'Vulnerável',
-      region: 'Oceanos',
-      color: '#f0ad4e',
-    },
-    {
-      name: 'Arara-azul',
-      scientific: 'Anodorhynchus hyacinthinus',
-      status: 'Em perigo',
-      region: 'América do Sul',
-      color: '#d9534f',
-    },
-    {
-      name: 'Panda Gigante',
-      scientific: 'Ailuropoda melanoleuca',
-      status: 'Vulnerável',
-      region: 'China',
-      color: '#f0ad4e',
-    },
-    {
-      name: 'Rinoceronte-de-java',
-      scientific: 'Rhinoceros sondaicus',
-      status: 'Criticamente em perigo',
-      region: 'Ásia',
-      color: '#d9534f',
-    },
-  ];
+.header-left h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
 
-  // Inicializar mapa
-  function initMap() {
-    map = L.map('map').setView([20, 0], 2);
+.header-left p {
+  font-size: 0.9rem;
+  font-weight: 300;
+  opacity: 0.8;
+  margin-top: 0.15rem;
+}
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 7,
-      attribution:
-        '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
+#mode-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
 
-    // GeoJSON países (simplificado)
-    fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-      .then((res) => res.json())
-      .then((geojson) => {
-        countryLayer = L.geoJSON(geojson, {
-          style: countryStyle,
-          onEachFeature: onEachCountry,
-        }).addTo(map);
+#mode-toggle:hover {
+  color: #b2ff59;
+}
 
-        addLegend();
-      });
+.container {
+  flex: 1;
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 0 0 300px;
+  background: #dcedc8;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #33691e;
+}
+
+.search-section input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #9ccc65;
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease;
+}
+
+.search-section input:focus {
+  outline: none;
+  border-color: #558b2f;
+  box-shadow: 0 0 4px #558b2f;
+}
+
+.species-list-container h2 {
+  font-size: 1.2rem;
+  color: #33691e;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #558b2f;
+  padding-bottom: 0.3rem;
+}
+
+.species-list {
+  overflow-y: auto;
+  max-height: 400px;
+  padding-right: 5px;
+}
+
+/* Cada item espécie */
+.species-item {
+  background: #f1f8e9;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 3px rgba(85, 139, 47, 0.2);
+}
+
+.species-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #33691e;
+}
+
+.species-scientific {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #558b2f;
+  margin-bottom: 0.2rem;
+}
+
+.species-status {
+  font-weight: 600;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#map {
+  height: 450px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.data-panels {
+  background: #c5e1a5;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(85, 139, 47, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.data-panels h2 {
+  color: #33691e;
+  font-weight: 700;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.chart-section {
+  background: #f9fff9;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 4px rgba(85, 139, 47, 0.15);
+}
+
+.chart-section h3 {
+  color: #558b2f;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Legenda mapa */
+.legend {
+  margin-top: 1rem;
+  background: #dcedc8;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  max-width: 350px;
+  box-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+  color: #33691e;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.legend span {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+/* Scrollbar species-list */
+.species-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.species-list::-webkit-scrollbar-thumb {
+  background-color: #558b2f;
+  border-radius: 10px;
+}
+
+.species-list::-webkit-scrollbar-track {
+  background-color: #e8f5e9;
+}
+
+/* Dark mode */
+body.dark-mode {
+  background-color: #121b17;
+  color: #b9f6ca;
+}
+
+body.dark-mode .header {
+  background-color: #1b4d1b;
+  color: #b9f6ca;
+  box-shadow: none;
+}
+
+body.dark-mode .sidebar {
+  background: #264d26;
+  color: #b9f6ca;
+}
+
+body.dark-mode .sidebar input {
+  background: #395b39;
+  border: 1px solid #7bd85b;
+  color: #d1ffd6;
+}
+
+body.dark-mode .sidebar input::placeholder {
+  color: #a5dba5;
+}
+
+body.dark-mode .species-list-container h2,
+body.dark-mode .search-section label {
+  color: #a5dba5;
+}
+
+body.dark-mode .species-item {
+  background: #1e3b1e;
+  box-shadow: none;
+  color: #b9f6ca;
+}
+
+body.dark-mode .species-status {
+  font-weight: 700;
+}
+
+body.dark-mode .main-content {
+  background: transparent;
+}
+
+body.dark-mode #map {
+  filter: brightness(0.9);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+
+body.dark-mode .data-panels {
+  background: #264d26;
+  box-shadow: none;
+}
+
+body.dark-mode .data-panels h2,
+body.dark-mode .chart-section h3 {
+  color: #a5dba5;
+}
+
+body.dark-mode .legend {
+  background: #264d26;
+  color: #a5dba5;
+  box-shadow: none;
+}
+
+/* Responsividade */
+
+@media (max-width: 1080px) {
+  .container {
+    flex-direction: column;
+    padding: 1rem 1rem 1rem 1rem;
   }
-
-  // Estilo default para países
-  function countryStyle(feature) {
-    return {
-      fillColor: '#117a65',
-      weight: 1,
-      opacity: 1,
-      color: 'white',
-      fillOpacity: 0.7,
-    };
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.7rem 0.5rem;
   }
-
-  // Evento para cada país
-  function onEachCountry(feature, layer) {
-    layer.on({
-      mouseover: highlightCountry,
-      mouseout: resetHighlight,
-      click: selectCountry,
-    });
-    layer.bindTooltip(feature.properties.name, {sticky: true});
+  .sidebar section {
+    min-width: 220px;
+    margin-right: 15px;
   }
-
-  // Highlight no país ao passar mouse
-  function highlightCountry(e) {
-    const layer = e.target;
-    layer.setStyle({
-      weight: 3,
-      color: '#f39c12',
-      fillOpacity: 0.9,
-    });
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-      layer.bringToFront();
-    }
+  .main-content {
+    gap: 1rem;
   }
-
-  // Reset estilo do país
-  function resetHighlight(e) {
-    if (currentCountry !== e.target) {
-      countryLayer.resetStyle(e.target);
-    }
+  #map {
+    height: 300px;
   }
-
-  // Seleciona país e atualiza gráficos e lista
-  function selectCountry(e) {
-    if (currentCountry) {
-      countryLayer.resetStyle(currentCountry);
-    }
-    currentCountry = e.target;
-    currentCountry.setStyle({
-      weight: 3,
-      color: '#e74c3c',
-      fillOpacity: 0.9,
-    });
-
-    const countryName = currentCountry.feature.properties.name;
-    document.getElementById('country-name').textContent = countryName;
-
-    updateCharts(countryName);
-    updateSpeciesList(countryName);
+  .data-panels {
+    padding: 1rem;
   }
+}
 
-  // Atualiza gráficos conforme país
-  let chartCo2, chartTrees, chartBiodiversity;
-
-  function updateCharts(countryName) {
-    const data = countriesData[countryName] || {
-      co2: [0, 0, 0, 0, 0],
-      trees: [0, 0, 0, 0, 0],
-      biodiversity: [0, 0, 0, 0, 0],
-    };
-    const labels = ['2021', '2022', '2023', '2024', '2025'];
-
-    const ctxCo2 = document.getElementById('chartCo2').getContext('2d');
-    if (chartCo2) chartCo2.destroy();
-    chartCo2 = new Chart(ctxCo2, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Emissão CO₂ (toneladas)',
-            data: data.co2,
-            borderColor: '#e74c3c',
-            backgroundColor: 'rgba(231, 76, 60, 0.2)',
-            fill: true,
-            tension: 0.3,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {display: true},
-          tooltip: {enabled: true},
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {stepSize: 200},
-          },
-        },
-      },
-    });
-
-    const ctxTrees = document.getElementById('chartTrees').getContext('2d');
-    if (chartTrees) chartTrees.destroy();
-    chartTrees = new Chart(ctxTrees, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Número de Árvores',
-            data: data.trees,
-            backgroundColor: '#27ae60',
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {legend: {display: true}},
-        scales: {
-          y: {beginAtZero: true},
-        },
-      },
-    });
-
-    const ctxBio = document.getElementById('chartBiodiversity').getContext('2d');
-    if (chartBiodiversity) chartBiodiversity.destroy();
-    chartBiodiversity = new Chart(ctxBio, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Índice de Biodiversidade',
-            data: data.biodiversity,
-            borderColor: '#2980b9',
-            backgroundColor: 'rgba(41, 128, 185, 0.2)',
-            fill: true,
-            tension: 0.3,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {legend: {display: true}},
-        scales: {
-          y: {beginAtZero: true},
-        },
-      },
-    });
+@media (max-width: 600px) {
+  .header-left h1 {
+    font-size: 1.3rem;
   }
-
-  // Atualiza lista de espécies filtrando pelo país/região (simplificado)
-  function updateSpeciesList(countryName) {
-    const listContainer = document.getElementById('species-list');
-    listContainer.innerHTML = '';
-
-    // Filtra espécies por região (exemplo simplificado)
-    let filteredSpecies = threatenedSpecies.filter((sp) => {
-      // Mapear alguns países para regiões, simples
-      const regionMap = {
-        Brazil: 'América do Sul',
-        USA: 'América do Norte',
-        Canada: 'América do Norte',
-        India: 'Ásia',
-        Australia: 'Oceania',
-      };
-      return sp.region === regionMap[countryName];
-    });
-
-    if (filteredSpecies.length === 0) {
-      listContainer.innerHTML =
-        '<p>Nenhuma espécie ameaçada listada para esta região.</p>';
-      return;
-    }
-
-    filteredSpecies.forEach((sp) => {
-      const item = document.createElement('div');
-      item.className = 'species-item';
-      item.innerHTML = `
-        <div class="species-name">${sp.name}</div>
-        <div class="species-scientific">${sp.scientific}</div>
-        <div class="species-status" style="color: ${sp.color}">${sp.status}</div>
-      `;
-      listContainer.appendChild(item);
-    });
+  .header-left p {
+    font-size: 0.7rem;
   }
-
-  // Cria legenda do mapa
-  function addLegend() {
-    const legend = document.getElementById('legend');
-    legend.innerHTML = `
-      <div><span style="background:#117a65"></span> Países</div>
-      <div><span style="background:#f39c12"></span> Hover</div>
-      <div><span style="background:#e74c3c"></span> Selecionado</div>
-    `;
-    legend.querySelectorAll('span').forEach((span) => {
-      span.style.display = 'inline-block';
-      span.style.width = '18px';
-      span.style.height = '18px';
-      span.style.marginRight = '6px';
-      span.style.borderRadius = '4px';
-    });
+  #map {
+    height: 250px;
   }
-
-  // Modo claro/escuro toggle
-  const modeToggle = document.getElementById('mode-toggle');
-  modeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    // Muda ícone
-    if (document.body.classList.contains('dark-mode')) {
-      modeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-      modeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-  });
-
-  // Filtrar países e espécies com busca na sidebar
-  const searchCountry = document.getElementById('search-country');
-  const searchSpecies = document.getElementById('search-species');
-
-  searchCountry.addEventListener('input', () => {
-    const query = searchCountry.value.toLowerCase();
-    countryLayer.eachLayer((layer) => {
-      const name = layer.feature.properties.name.toLowerCase();
-      if (name.includes(query)) {
-        layer.setStyle({fillOpacity: 0.9});
-        layer.addTo(map);
-      } else {
-        map.removeLayer(layer);
-      }
-    });
-  });
-
-  searchSpecies.addEventListener('input', () => {
-    const query = searchSpecies.value.toLowerCase();
-    const listContainer = document.getElementById('species-list');
-    const items = listContainer.querySelectorAll('.species-item');
-    items.forEach((item) => {
-      const name = item.querySelector('.species-name').textContent.toLowerCase();
-      if (name.includes(query)) {
-        item.style.display = '';
-      } else {
-        item.style.display = 'none';
-      }
-    });
-  });
-
-  // Inicializa mapa e gráficos
-  initMap();
-});
+  canvas {
+    height: 150px !important;
+  }
+  .species-list {
+    max-height: 200px;
+  }
+}
