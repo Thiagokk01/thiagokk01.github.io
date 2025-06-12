@@ -1,22 +1,54 @@
-function updateCharts(country) {
-  if (!chartCo2 || !chartTrees || !chartBiodiversity) return;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoTracker PRO 🌱</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <h1>EcoTracker PRO 🌎</h1>
+    <button id="mode-toggle"><i class="fas fa-moon"></i></button>
+  </header>
 
-  // Atualiza as cores dos gráficos para destacar o país atual
-  const highlightColor = "#f39c12";
-  const defaultColor = "#27ae60";
+  <main>
+    <section id="map-container">
+      <div id="map"></div>
+      <div id="legend" class="legend"></div>
+    </section>
 
-  const index = countriesData.findIndex(c => c.name === country.name);
+    <aside id="info-panel">
+      <h2 id="country-name">Selecione um país</h2>
 
-  chartCo2.data.datasets[0].backgroundColor = countriesData.map((_, i) =>
-    i === index ? highlightColor : defaultColor
-  );
-  chartCo2.update();
+      <div id="search-bar">
+        <input type="text" id="search-country" placeholder="🔍 País..." />
+        <input type="text" id="search-species" placeholder="🔍 Espécie ou status..." />
+      </div>
 
-  chartTrees.data.datasets[0].borderColor = countriesData.map((_, i) =>
-    i === index ? highlightColor : defaultColor
-  );
-  chartTrees.update();
+      <div id="species-list" class="scrollable"></div>
 
-  chartBiodiversity.data.datasets[0].borderColor = highlightColor;
-  chartBiodiversity.update();
-}
+      <div id="global-species">
+        <h3>🌍 Espécies Ameaçadas Globalmente</h3>
+        <div id="global-list" class="scrollable"></div>
+      </div>
+
+      <div id="charts">
+        <canvas id="chartCo2"></canvas>
+        <canvas id="chartTrees"></canvas>
+        <canvas id="chartBiodiversity"></canvas>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 EcoTracker PRO. Dados simulados para fins educacionais.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
