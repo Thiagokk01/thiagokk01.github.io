@@ -1035,5 +1035,17 @@ button {
     
     .overlay-stat {
         min-width: auto;
-    }
+    /* Adicione no style.css para corrigir a navegação mobile */
+@media (max-width: 576px) {
+  .nav-list {
+    flex-direction: column;
+    gap: 0.5rem;
   }
+  .nav-link {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav-link.active::after {
+    display: none;
+  }
+}
