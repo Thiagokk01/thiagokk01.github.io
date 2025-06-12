@@ -1,116 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>EcoTracker PRO - Monitoramento Ambiental</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoTracker PRO - Monitoramento Ambiental</title>
 
-<!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-o+z3Ts+Mnp0UBG88KxT9XqZzY1q5fZbWJvDjpkH0v+o="
-  crossorigin=""
-/>
+  <!-- Leaflet CSS (sem integrity para evitar bloqueio) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
-<!-- FontAwesome -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  crossorigin="anonymous"
-  referrerpolicy="no-referrer"
-/>
+  <!-- FontAwesome para ícones -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
 
-<!-- Link CSS externo -->
-<link rel="stylesheet" href="style.css" />
+  <!-- Seu CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body data-theme="light">
 
-<header class="site-header">
-  <div class="container header-container">
-    <h1 class="site-title"><i class="fas fa-leaf"></i> EcoTracker PRO</h1>
-    <nav class="main-nav" aria-label="Menu principal">
-      <ul>
-        <li><a href="#dashboard">Dashboard</a></li>
-        <li><a href="#map-section">Mapa</a></li>
-        <li><a href="#species-section">Espécies</a></li>
-      </ul>
-    </nav>
-    <button id="toggleTheme" aria-label="Alternar tema claro e escuro">
-      <i class="fas fa-moon"></i>
-    </button>
-  </div>
-</header>
+  <button id="toggleTheme" aria-label="Alternar tema">
+    <i class="fas fa-moon"></i>
+  </button>
 
-<main class="container main-content">
-  <!-- Dashboard indicadores -->
-  <section id="dashboard" class="dashboard-section" aria-label="Indicadores ambientais">
-    <h2 class="section-title"><i class="fas fa-chart-line"></i> Indicadores Ambientais</h2>
+  <header>
+    <h1>EcoTracker PRO</h1>
+    <p>Monitoramento Ambiental e Conservação</p>
+  </header>
 
-    <div class="indicators-grid">
-      <article class="card indicator-card" aria-labelledby="treeCoverageLabel">
-        <h3 id="treeCoverageLabel">Cobertura de Árvores</h3>
-        <p class="indicator-value" id="treeCoverage">--</p>
-        <p class="indicator-desc">Percentual estimado de cobertura arbórea.</p>
-      </article>
+  <main class="dashboard-grid">
 
-      <article class="card indicator-card" aria-labelledby="co2ReductionLabel">
-        <h3 id="co2ReductionLabel">Redução de CO₂</h3>
-        <p class="indicator-value" id="co2Reduction">--</p>
-        <p class="indicator-desc">Percentual de redução de emissões.</p>
-      </article>
+    <!-- Indicadores -->
+    <section class="indicators-grid">
+      <div class="indicator-card">
+        <h3><i class="fas fa-tree"></i> Cobertura de Árvores</h3>
+        <p id="treeCoverage">--%</p>
+      </div>
+      <div class="indicator-card">
+        <h3><i class="fas fa-cloud"></i> Redução de CO₂</h3>
+        <p id="co2Reduction">--%</p>
+      </div>
+      <div class="indicator-card">
+        <h3><i class="fas fa-paw"></i> Biodiversidade</h3>
+        <p id="biodiversityIndex">--</p>
+      </div>
+    </section>
 
-      <article class="card indicator-card" aria-labelledby="biodiversityIndexLabel">
-        <h3 id="biodiversityIndexLabel">Índice de Biodiversidade</h3>
-        <p class="indicator-value" id="biodiversityIndex">--</p>
-        <p class="indicator-desc">Indicador geral da diversidade biológica.</p>
-      </article>
-    </div>
+    <!-- Gráficos -->
+    <section class="charts-grid">
+      <div class="chart-card">
+        <h3><i class="fas fa-chart-line"></i> Cobertura de Árvores</h3>
+        <canvas id="treeCoverageChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3><i class="fas fa-chart-area"></i> Redução de CO₂</h3>
+        <canvas id="co2ReductionChart"></canvas>
+      </div>
+    </section>
 
-    <div class="charts-grid">
-      <article class="card chart-card" aria-labelledby="treeCoverageChartLabel">
-        <h3 id="treeCoverageChartLabel"><i class="fas fa-tree"></i> Cobertura de Árvores por Região</h3>
-        <canvas id="treeCoverageChart" role="img" aria-label="Gráfico de barras da cobertura de árvores por região"></canvas>
-      </article>
+    <!-- Mapa -->
+    <section class="map-section">
+      <h3><i class="fas fa-map"></i> Mapa de Monitoramento</h3>
+      <div id="map"></div>
+    </section>
 
-      <article class="card chart-card" aria-labelledby="co2ReductionChartLabel">
-        <h3 id="co2ReductionChartLabel"><i class="fas fa-cloud"></i> Redução de CO₂ por Região</h3>
-        <canvas id="co2ReductionChart" role="img" aria-label="Gráfico de pizza da redução de CO₂ por região"></canvas>
-      </article>
-    </div>
-  </section>
+    <!-- Espécies Ameaçadas -->
+    <section class="species-section">
+      <h3><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas Globalmente</h3>
+      <div id="speciesList" class="species-list"></div>
+    </section>
 
-  <!-- Mapa -->
-  <section id="map-section" class="map-section" aria-label="Mapa de monitoramento ambiental">
-    <h2 class="section-title"><i class="fas fa-map"></i> Mapa Interativo</h2>
-    <div id="map"></div>
-  </section>
+  </main>
 
-  <!-- Espécies ameaçadas -->
-  <section id="species-section" class="species-section" aria-label="Espécies ameaçadas">
-    <h2 class="section-title"><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas Globalmente</h2>
-    <div class="species-list" id="speciesList" tabindex="0" aria-live="polite" aria-atomic="true"></div>
-  </section>
-</main>
+  <footer>
+    &copy; 2025 EcoTracker PRO - Todos os direitos reservados
+  </footer>
 
-<footer class="site-footer">
-  <div class="container footer-container">
-    <p>© 2025 EcoTracker PRO - Todos os direitos reservados.</p>
-  </div>
-</footer>
+  <!-- Leaflet JS (sem integrity) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Scripts externos -->
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-o+z3Ts+Mnp0UBG88KxT9XqZzY1q5fZbWJvDjpkH0v+o="
-  crossorigin=""
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"
-  crossorigin="anonymous"
-></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Seu script -->
-<script src="script.js"></script>
+  <!-- Seu JS -->
+  <script src="script.js"></script>
+
 </body>
 </html>
