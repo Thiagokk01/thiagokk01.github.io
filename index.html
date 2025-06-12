@@ -3,93 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO</title>
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+e2uRk8k8DH4w4QlBv2PFrOkPyXG6/9gALtGQ5d5M="
-    crossorigin=""
-  />
-  <!-- FontAwesome for icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-pzHCo+CHLcN7/J4iH4Vb3wYVHEa5ouAT0n7Bj7Jk2wcruZbVWq2HX+3c5JsZPkGTT32zx0QH6D5LemYV2EkOQ=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
-  <!-- Custom CSS -->
+  <title>EcoTracker PRO - Monitoramento Ambiental</title>
   <link rel="stylesheet" href="style.css" />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css"
+    rel="stylesheet"
+  />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"
+    defer
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+    defer
+  ></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <h1>EcoTracker PRO</h1>
-      <p>Monitoramento ambiental global</p>
-    </div>
-    <button id="mode-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">
-      <i class="fas fa-moon"></i>
+  <header>
+    <h1>EcoTracker PRO</h1>
+    <button id="mode-toggle" title="Alternar modo claro/escuro">
+      <i class="fa fa-moon"></i>
     </button>
   </header>
 
-  <div class="container">
-    <aside class="sidebar">
-      <section class="search-section">
-        <label for="search-country">Buscar país:</label>
-        <input type="text" id="search-country" placeholder="Digite o nome do país..." />
-      </section>
+  <section id="search-section">
+    <input
+      type="text"
+      id="search-country"
+      placeholder="Buscar país..."
+      autocomplete="off"
+    />
+    <input
+      type="text"
+      id="search-species"
+      placeholder="Buscar espécies..."
+      autocomplete="off"
+    />
+  </section>
 
-      <section class="search-section">
-        <label for="search-species">Buscar espécie:</label>
-        <input type="text" id="search-species" placeholder="Digite nome da espécie..." />
-      </section>
-
-      <section class="species-list-container">
-        <h2>Espécies Ameaçadas</h2>
-        <div id="species-list" class="species-list">
-          <!-- Espécies vão aqui -->
-          <p>Selecione um país para ver as espécies ameaçadas.</p>
-        </div>
-      </section>
+  <main>
+    <aside id="sidebar">
+      <h2 id="country-name">Selecione um país</h2>
+      <div id="species-list"><p>Espécies ameaçadas aparecerão aqui</p></div>
     </aside>
 
-    <main class="main-content">
-      <div id="map" aria-label="Mapa interativo de países"></div>
+    <section id="map-section">
+      <div id="map"></div>
+      <div id="legend"></div>
+    </section>
 
-      <div class="data-panels">
-        <h2 id="country-name" aria-live="polite">Nenhum país selecionado</h2>
+    <section id="charts-section">
+      <canvas id="chartCo2" aria-label="Gráfico de CO2" role="img"></canvas>
+      <canvas id="chartTrees" aria-label="Gráfico de Árvores" role="img"></canvas>
+      <canvas id="chartBiodiversity" aria-label="Gráfico de Biodiversidade" role="img"></canvas>
+    </section>
+  </main>
 
-        <section class="chart-section">
-          <h3>Emissão de CO₂ (toneladas)</h3>
-          <canvas id="chartCo2" aria-label="Gráfico de emissão de CO2" role="img"></canvas>
-        </section>
+  <footer>
+    <p>© 2025 EcoTracker PRO - Monitoramento Ambiental</p>
+  </footer>
 
-        <section class="chart-section">
-          <h3>Número de Árvores</h3>
-          <canvas id="chartTrees" aria-label="Gráfico do número de árvores" role="img"></canvas>
-        </section>
-
-        <section class="chart-section">
-          <h3>Índice de Biodiversidade</h3>
-          <canvas id="chartBiodiversity" aria-label="Gráfico do índice de biodiversidade" role="img"></canvas>
-        </section>
-      </div>
-
-      <div id="legend" class="legend" aria-label="Legenda do mapa"></div>
-    </main>
-  </div>
-
-  <!-- Leaflet JS -->
+  <!-- FontAwesome ícones -->
   <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o+8cXSwFwF5fFDeNXHIF8f+R+I0FUlKfq/c7rqt6j0w="
-    crossorigin=""
+    src="https://kit.fontawesome.com/a076d05399.js"
+    crossorigin="anonymous"
+    defer
   ></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Custom Script -->
-  <script src="script.js"></script>
 </body>
 </html>
