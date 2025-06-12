@@ -1,4 +1,4 @@
-/* Reset e base */
+/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -6,44 +6,61 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f4f8;
-  color: #2c3e50;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f4f7f6;
+  color: #333;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #27ae60;
+/* Cabeçalho */
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+}
+
+header p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Container dos gráficos */
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Cartão do gráfico */
+.chart-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: scale(1.01);
+}
+
+.chart-card h2 {
+  margin-bottom: 15px;
+  color: #2e7d32;
+  font-size: 1.3rem;
   text-align: center;
 }
 
-main {
-  width: 100%;
-  max-width: 960px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.chart-container {
-  margin-bottom: 40px;
-}
-
-canvas {
-  display: block;
-  width: 100% !important;
-  height: 300px !important;
-}
-
+/* Rodapé */
 footer {
+  text-align: center;
   margin-top: 40px;
   font-size: 0.9rem;
-  color: #888;
-  text-align: center;
+  color: #777;
 }
