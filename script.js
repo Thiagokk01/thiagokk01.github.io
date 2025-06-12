@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const countries = ["Brasil", "Argentina", "Chile", "Peru"];
   const co2Data = [150, 90, 60, 45];
+   document.addEventListener("DOMContentLoaded", () => {
+  // Configuração global opcional
+  Chart.defaults.animation.duration = 1000;
+  Chart.defaults.animation.easing = 'easeInOutQuart';
+  Chart.defaults.responsive = true;
   const treesData = [8000, 4200, 3600, 2900];
   const treesNextYear = treesData.map(t => Math.round(t * 1.1));
   const biodiversityData = [85, 70, 55, 60];
+});
 
   // Gráfico de CO2
   new Chart(document.getElementById("chartCo2"), {
@@ -77,20 +83,3 @@ document.addEventListener("DOMContentLoaded", () => {
         backgroundColor: "rgba(39,174,96,0.4)",
         borderColor: "#27ae60"
       }]
-    },
-    options: {
-      responsive: true,
-      animation: {
-        duration: 1500,
-        easing: "easeInOutQuart"
-      },
-      scales: {
-        r: {
-          beginAtZero: true,
-          min: 0,
-          max: 100
-        }
-      }
-    }
-  });
-});
