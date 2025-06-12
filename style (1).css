@@ -1,0 +1,69 @@
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f5faf7;
+  color: #333;
+}
+
+.header {
+  background: linear-gradient(135deg, #2e8b57, #3cb371);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.logo {
+  font-size: 2rem;
+}
+
+.highlight {
+  color: #a5d6a7;
+}
+
+.main-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.species-item {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.species-name {
+  font-weight: bold;
+}
+
+.species-scientific {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #999;
+  padding: 1rem 0;
+}
