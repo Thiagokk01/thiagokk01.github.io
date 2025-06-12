@@ -1,90 +1,282 @@
-<!DOCTYPE html>
-<html lang="pt-BR" >
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO - Dashboard Ambiental Ultra</title>
+/* Reset e variáveis de cor */
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+:root {
+  --color-primary: #117a65;
+  --color-primary-light: #16a085;
+  --color-secondary: #444;
+  --color-bg-light: #f4f9f9;
+  --color-bg-dark: #121212;
+  --color-text-light: #222;
+  --color-text-dark: #eee;
+  --color-card-light: #fff;
+  --color-card-dark: #1f1f1f;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --transition-fast: 0.3s ease;
+}
 
-  <!-- FontAwesome para ícones -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  <!-- Estilo -->
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="header">
-    <div class="header-left">
-      <h1><i class="fas fa-globe-americas"></i> EcoTracker PRO</h1>
-      <p>Monitoramento Ambiental Mundial</p>
-    </div>
-    <div class="header-right">
-      <button id="mode-toggle" aria-label="Alternar modo claro/escuro" title="Alternar tema claro/escuro">
-        <i class="fas fa-moon"></i>
-      </button>
-    </div>
-  </header>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast);
+}
 
-  <div class="container">
-    <aside class="sidebar">
-      <section class="filter-section">
-        <h2><i class="fas fa-filter"></i> Filtros</h2>
-        <input
-          type="text"
-          id="search-country"
-          placeholder="Buscar país..."
-          aria-label="Buscar país"
-        />
-        <input
-          type="text"
-          id="search-species"
-          placeholder="Buscar espécie ameaçada..."
-          aria-label="Buscar espécie"
-        />
-      </section>
+body.dark-mode {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-dark);
+}
 
-      <section class="legend-section">
-        <h2><i class="fas fa-map"></i> Legenda do Mapa</h2>
-        <div id="legend"></div>
-      </section>
-    </aside>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 3px 10px var(--color-shadow);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
 
-    <main class="main-content">
-      <section class="map-container card">
-        <div id="map"></div>
-      </section>
+.header-left h1 {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-      <section class="charts-container card">
-        <h2><i class="fas fa-chart-line"></i> Indicadores do País</h2>
-        <div id="country-name" class="country-name">Clique em um país no mapa</div>
-        <canvas id="chartCo2"></canvas>
-        <canvas id="chartTrees"></canvas>
-        <canvas id="chartBiodiversity"></canvas>
-      </section>
+.header-left p {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.9rem;
+}
 
-      <section class="species-container card">
-        <h2><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas</h2>
-        <div id="species-list"></div>
-      </section>
-    </main>
-  </div>
+.header-right button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
 
-  <footer class="footer">
-    <small>© 2025 EcoTracker PRO — Dados simulados para demonstração</small>
-  </footer>
+.header-right button:hover {
+  color: var(--color-primary-light);
+}
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+.container {
+  display: flex;
+  padding: 5.5rem 2rem 2rem 2rem;
+  gap: 1rem;
+  flex-grow: 1;
+  min-height: calc(100vh - 100px);
+}
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+.sidebar {
+  width: 320px;
+  background-color: var(--color-card-light);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transition: background-color var(--transition-fast);
+}
 
-  <!-- Script principal -->
-  <script src="script.js" defer></script>
-</body>
-</html>
+body.dark-mode .sidebar {
+  background-color: var(--color-card-dark);
+}
+
+.filter-section input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+}
+
+.filter-section input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.legend-section #legend {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+body.dark-mode .legend-section #legend {
+  color: var(--color-text-dark);
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: var(--color-card-light);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+body.dark-mode .card {
+  background-color: var(--color-card-dark);
+}
+
+.map-container {
+  flex-grow: 1;
+  min-height: 600px;
+  position: relative;
+}
+
+#map {
+  height: 100%;
+  border-radius: 10px;
+  border: 2px solid var(--color-primary);
+}
+
+.charts-container h2,
+.species-container h2 {
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 0.5rem;
+}
+
+.country-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+  text-align: center;
+  min-height: 2.5rem;
+}
+
+canvas {
+  width: 100% !important;
+  height: 220px !important;
+  margin-bottom: 1.5rem;
+}
+
+.species-container {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+#species-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.species-item {
+  background: #eaf6f5;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.1);
+  color: #1a3b33;
+  font-size: 0.95rem;
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.species-item:hover {
+  background-color: var(--color-primary-light);
+  color: white;
+}
+
+.species-name {
+  font-weight: 700;
+}
+
+.species-scientific {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.footer {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+  color: #777;
+  background: #f1f7f6;
+  margin-top: auto;
+}
+
+body.dark-mode .footer {
+  background: #222;
+  color: var(--color-text-dark);
+}
+
+/* Scrollbar customizada para species list */
+#species-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#species-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+#species-list::-webkit-scrollbar-track {
+  background-color: #d1f0e6;
+}
+
+/* Responsividade */
+
+@media (max-width: 1080px) {
+  .container {
+    flex-direction: column;
+    padding: 5.5rem 1rem 1rem 1rem;
+  }
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.5rem;
+  }
+  .sidebar section {
+    min-width: 200px;
+  }
+  .main-content {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-left h1 {
+    font-size: 1.3rem;
+  }
+  .header-left p {
+    font-size: 0.75rem;
+  }
+  #map {
+    height: 350px;
+  }
+  canvas {
+    height: 180px !important;
+  }
+}
