@@ -3,90 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO - Monitoramento Ambiental</title>
-
-  <!-- Leaflet CSS (sem integrity para evitar bloqueio) -->
+  <title>EcoTracker PRO</title>
+  <link rel="stylesheet" href="style.css" />
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
   />
-
-  <!-- FontAwesome para ícones -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
-
-  <!-- Seu CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <script
+    src="https://kit.fontawesome.com/a076d05399.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+    defer
+  ></script>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+    defer
+  ></script>
+  <script src="script.js" defer></script>
 </head>
 <body data-theme="light">
-
-  <button id="toggleTheme" aria-label="Alternar tema">
-    <i class="fas fa-moon"></i>
-  </button>
-
   <header>
     <h1>EcoTracker PRO</h1>
-    <p>Monitoramento Ambiental e Conservação</p>
+    <button id="toggleTheme" title="Alternar tema">
+      <i class="fas fa-moon"></i>
+    </button>
   </header>
 
-  <main class="dashboard-grid">
-
-    <!-- Indicadores -->
-    <section class="indicators-grid">
-      <div class="indicator-card">
-        <h3><i class="fas fa-tree"></i> Cobertura de Árvores</h3>
-        <p id="treeCoverage">--%</p>
-      </div>
-      <div class="indicator-card">
-        <h3><i class="fas fa-cloud"></i> Redução de CO₂</h3>
-        <p id="co2Reduction">--%</p>
-      </div>
-      <div class="indicator-card">
-        <h3><i class="fas fa-paw"></i> Biodiversidade</h3>
-        <p id="biodiversityIndex">--</p>
-      </div>
-    </section>
-
-    <!-- Gráficos -->
-    <section class="charts-grid">
-      <div class="chart-card">
-        <h3><i class="fas fa-chart-line"></i> Cobertura de Árvores</h3>
+  <main>
+    <section class="cards-grid">
+      <article class="card">
+        <h2>Cobertura de Árvores</h2>
+        <p id="treeCoverage" class="big-number">--%</p>
         <canvas id="treeCoverageChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3><i class="fas fa-chart-area"></i> Redução de CO₂</h3>
+      </article>
+
+      <article class="card">
+        <h2>Redução de CO₂</h2>
+        <p id="co2Reduction" class="big-number">--%</p>
         <canvas id="co2ReductionChart"></canvas>
-      </div>
+      </article>
+
+      <article class="card">
+        <h2>Índice de Biodiversidade</h2>
+        <p id="biodiversityIndex" class="big-number">--</p>
+      </article>
     </section>
 
-    <!-- Mapa -->
-    <section class="map-section">
-      <h3><i class="fas fa-map"></i> Mapa de Monitoramento</h3>
+    <section id="mapSection" class="card">
+      <h2>Mapa Ambiental</h2>
       <div id="map"></div>
     </section>
 
-    <!-- Espécies Ameaçadas -->
-    <section class="species-section">
-      <h3><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas Globalmente</h3>
-      <div id="speciesList" class="species-list"></div>
+    <section id="speciesSection" class="card">
+      <h2>Espécies Ameaçadas</h2>
+      <div id="speciesList"></div>
     </section>
-
   </main>
 
   <footer>
-    &copy; 2025 EcoTracker PRO - Todos os direitos reservados
+    <p>© 2025 EcoTracker PRO - Projeto de monitoramento ambiental</p>
   </footer>
-
-  <!-- Leaflet JS (sem integrity) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Seu JS -->
-  <script src="script.js"></script>
-
 </body>
 </html>
