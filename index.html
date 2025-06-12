@@ -1,90 +1,95 @@
 <!DOCTYPE html>
-<html lang="pt-BR" >
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO - Dashboard Ambiental Ultra</title>
+  <title>EcoTracker PRO</title>
 
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- FontAwesome para ícones -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+e2uRk8k8DH4w4QlBv2PFrOkPyXG6/9gALtGQ5d5M="
+    crossorigin=""
+  />
+  <!-- FontAwesome for icons -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pzHCo+CHLcN7/J4iH4Vb3wYVHEa5ouAT0n7Bj7Jk2wcruZbVWq2HX+3c5JsZPkGTT32zx0QH6D5LemYV2EkOQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
   />
-
-  <!-- Estilo -->
-  <link rel="stylesheet" href="styles.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="header">
     <div class="header-left">
-      <h1><i class="fas fa-globe-americas"></i> EcoTracker PRO</h1>
-      <p>Monitoramento Ambiental Mundial</p>
+      <h1>EcoTracker PRO</h1>
+      <p>Monitoramento ambiental global</p>
     </div>
-    <div class="header-right">
-      <button id="mode-toggle" aria-label="Alternar modo claro/escuro" title="Alternar tema claro/escuro">
-        <i class="fas fa-moon"></i>
-      </button>
-    </div>
+    <button id="mode-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">
+      <i class="fas fa-moon"></i>
+    </button>
   </header>
 
   <div class="container">
     <aside class="sidebar">
-      <section class="filter-section">
-        <h2><i class="fas fa-filter"></i> Filtros</h2>
-        <input
-          type="text"
-          id="search-country"
-          placeholder="Buscar país..."
-          aria-label="Buscar país"
-        />
-        <input
-          type="text"
-          id="search-species"
-          placeholder="Buscar espécie ameaçada..."
-          aria-label="Buscar espécie"
-        />
+      <section class="search-section">
+        <label for="search-country">Buscar país:</label>
+        <input type="text" id="search-country" placeholder="Digite o nome do país..." />
       </section>
 
-      <section class="legend-section">
-        <h2><i class="fas fa-map"></i> Legenda do Mapa</h2>
-        <div id="legend"></div>
+      <section class="search-section">
+        <label for="search-species">Buscar espécie:</label>
+        <input type="text" id="search-species" placeholder="Digite nome da espécie..." />
+      </section>
+
+      <section class="species-list-container">
+        <h2>Espécies Ameaçadas</h2>
+        <div id="species-list" class="species-list">
+          <!-- Espécies vão aqui -->
+          <p>Selecione um país para ver as espécies ameaçadas.</p>
+        </div>
       </section>
     </aside>
 
     <main class="main-content">
-      <section class="map-container card">
-        <div id="map"></div>
-      </section>
+      <div id="map" aria-label="Mapa interativo de países"></div>
 
-      <section class="charts-container card">
-        <h2><i class="fas fa-chart-line"></i> Indicadores do País</h2>
-        <div id="country-name" class="country-name">Clique em um país no mapa</div>
-        <canvas id="chartCo2"></canvas>
-        <canvas id="chartTrees"></canvas>
-        <canvas id="chartBiodiversity"></canvas>
-      </section>
+      <div class="data-panels">
+        <h2 id="country-name" aria-live="polite">Nenhum país selecionado</h2>
 
-      <section class="species-container card">
-        <h2><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas</h2>
-        <div id="species-list"></div>
-      </section>
+        <section class="chart-section">
+          <h3>Emissão de CO₂ (toneladas)</h3>
+          <canvas id="chartCo2" aria-label="Gráfico de emissão de CO2" role="img"></canvas>
+        </section>
+
+        <section class="chart-section">
+          <h3>Número de Árvores</h3>
+          <canvas id="chartTrees" aria-label="Gráfico do número de árvores" role="img"></canvas>
+        </section>
+
+        <section class="chart-section">
+          <h3>Índice de Biodiversidade</h3>
+          <canvas id="chartBiodiversity" aria-label="Gráfico do índice de biodiversidade" role="img"></canvas>
+        </section>
+      </div>
+
+      <div id="legend" class="legend" aria-label="Legenda do mapa"></div>
     </main>
   </div>
 
-  <footer class="footer">
-    <small>© 2025 EcoTracker PRO — Dados simulados para demonstração</small>
-  </footer>
-
   <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o+8cXSwFwF5fFDeNXHIF8f+R+I0FUlKfq/c7rqt6j0w="
+    crossorigin=""
+  ></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Script principal -->
-  <script src="script.js" defer></script>
+  <!-- Custom Script -->
+  <script src="script.js"></script>
 </body>
 </html>
