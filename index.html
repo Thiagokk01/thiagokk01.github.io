@@ -1,79 +1,22 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO - Monitoramento Ambiental</title>
+function updateCharts(country) {
+  if (!chartCo2 || !chartTrees || !chartBiodiversity) return;
 
-  <!-- CSS local -->
-  <link rel="stylesheet" href="style.css" />
+  // Atualiza as cores dos gráficos para destacar o país atual
+  const highlightColor = "#f39c12";
+  const defaultColor = "#27ae60";
 
-  <!-- Leaflet CSS -->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css"
-    rel="stylesheet"
-  />
+  const index = countriesData.findIndex(c => c.name === country.name);
 
-  <!-- FontAwesome via CDN CSS (sem erro CORS) -->
- <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-   />
-  
-  <!-- JS deferidos -->
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"
-    defer
-  ></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/chart.js"
-    defer
-  ></script>
-  <script src="script.js" defer></script>
-</head>
-<body>
-  <header>
-    <h1>EcoTracker PRO</h1>
-    <button id="mode-toggle" title="Alternar modo claro/escuro">
-      <i class="fa fa-moon"></i>
-    </button>
-  </header>
+  chartCo2.data.datasets[0].backgroundColor = countriesData.map((_, i) =>
+    i === index ? highlightColor : defaultColor
+  );
+  chartCo2.update();
 
-  <section id="search-section">
-    <input
-      type="text"
-      id="search-country"
-      placeholder="Buscar país..."
-      autocomplete="off"
-    />
-    <input
-      type="text"
-      id="search-species"
-      placeholder="Buscar espécies..."
-      autocomplete="off"
-    />
-  </section>
+  chartTrees.data.datasets[0].borderColor = countriesData.map((_, i) =>
+    i === index ? highlightColor : defaultColor
+  );
+  chartTrees.update();
 
-  <main>
-    <aside id="sidebar">
-      <h2 id="country-name">Selecione um país</h2>
-      <div id="species-list"><p>Espécies ameaçadas aparecerão aqui</p></div>
-    </aside>
-
-    <section id="map-section">
-      <div id="map"></div>
-      <div id="legend"></div>
-    </section>
-
-    <section id="charts-section">
-      <canvas id="chartCo2" aria-label="Gráfico de CO2" role="img"></canvas>
-      <canvas id="chartTrees" aria-label="Gráfico de Árvores" role="img"></canvas>
-      <canvas id="chartBiodiversity" aria-label="Gráfico de Biodiversidade" role="img"></canvas>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 EcoTracker PRO - Monitoramento Ambiental</p>
-  </footer>
-</body>
-</html>
+  chartBiodiversity.data.datasets[0].borderColor = highlightColor;
+  chartBiodiversity.update();
+}
