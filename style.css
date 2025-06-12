@@ -1,211 +1,187 @@
-/* Reset básico */
+/* Reset simples */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Tema claro e escuro */
 body[data-theme="light"] {
-  background-color: #f5f8f7;
-  color: #333;
+  background-color: #f4f9f4;
+  color: #2a2a2a;
 }
 
 body[data-theme="dark"] {
-  background-color: #121212;
-  color: #eee;
+  background-color: #1e1e1e;
+  color: #ddd;
 }
 
-/* Botão tema */
-#toggleTheme {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: inherit;
-}
-
-/* Cabeçalho */
 header {
-  padding: 1.5rem;
-  text-align: center;
   background-color: #3a8e3a;
   color: white;
-  border-radius: 0 0 12px 12px;
-  margin-bottom: 1rem;
-}
-
-/* Grid principal */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  padding: 0 1rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Indicadores */
-.indicators-grid {
-  grid-column: 1 / -1;
+  padding: 15px 30px;
   display: flex;
-  justify-content: space-around;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.indicator-card {
-  background-color: #e4f0e6;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgb(58 142 58 / 0.3);
-  flex: 1;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.2rem;
-}
-
-body[data-theme="dark"] .indicator-card {
-  background-color: #264626;
-  box-shadow: 0 0 10px rgb(100 255 100 / 0.4);
-}
-
-/* Gráficos */
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  grid-column: 1 / -1;
-}
-
-.chart-card {
-  background-color: #e4f0e6;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgb(58 142 58 / 0.3);
-}
-
-body[data-theme="dark"] .chart-card {
-  background-color: #264626;
-  box-shadow: 0 0 10px rgb(100 255 100 / 0.4);
-}
-
-.chart-card h3 {
-  margin-bottom: 0.5rem;
+header h1 {
   font-weight: 700;
+  font-size: 1.8rem;
 }
 
-/* Mapa */
-.map-section {
-  grid-column: 1 / -1;
-  background-color: #e4f0e6;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 0 12px rgb(58 142 58 / 0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-body[data-theme="dark"] .map-section {
-  background-color: #264626;
-  box-shadow: 0 0 10px rgb(100 255 100 / 0.4);
+header button:hover {
+  color: #a2d5a2;
+}
+
+main {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgb(0 0 0 / 0.1);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+body[data-theme="dark"] .card {
+  background-color: #2c2c2c;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #3a8e3a;
+}
+
+body[data-theme="dark"] .card h2 {
+  color: #a2d5a2;
+}
+
+.big-number {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #2d6a2d;
+}
+
+body[data-theme="dark"] .big-number {
+  color: #adebad;
 }
 
 #map {
-  width: 100%;
-  height: 450px;
-  border-radius: 12px;
-  border: 3px solid #3a8e3a;
+  height: 400px;
+  border-radius: 10px;
 }
 
-/* Espécies */
-.species-section {
-  grid-column: 1 / -1;
-  background-color: #e4f0e6;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 0 12px rgb(58 142 58 / 0.3);
-}
-
-body[data-theme="dark"] .species-section {
-  background-color: #264626;
-  box-shadow: 0 0 10px rgb(100 255 100 / 0.4);
-}
-
-.species-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+#speciesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .species-item {
-  background: white;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 0 8px rgba(58, 142, 58, 0.25);
-  transition: transform 0.3s ease;
-  cursor: default;
-}
-
-.species-item:hover {
-  transform: scale(1.03);
+  background-color: #e2f0d9;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(58, 142, 58, 0.25);
+  transition: background-color 0.3s;
 }
 
 body[data-theme="dark"] .species-item {
-  background: #3a6e3a;
-  box-shadow: 0 0 12px #6fb46f;
-  color: #d3f3d3;
+  background-color: #3a8e3a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+  color: white;
 }
 
 .species-name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.1rem;
-  color: #2b5e2b;
+  color: #2d6a2d;
 }
 
 body[data-theme="dark"] .species-name {
-  color: #a7d9a7;
+  color: #adebad;
 }
 
 .species-scientific {
   font-style: italic;
   font-size: 0.9rem;
-  margin: 0.25rem 0;
-  color: #4a774a;
+  color: #555;
 }
 
 body[data-theme="dark"] .species-scientific {
-  color: #c3e6c3;
+  color: #ccc;
 }
 
 .species-status {
-  font-weight: 600;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
-/* Rodapé */
 footer {
   text-align: center;
-  padding: 1rem;
+  padding: 20px;
   font-size: 0.9rem;
   color: #666;
-  border-top: 1px solid #ddd;
-  margin-top: 2rem;
+  border-top: 1px solid #ccc;
+  margin-top: 50px;
 }
 
 body[data-theme="dark"] footer {
-  color: #aaa;
+  color: #999;
   border-color: #444;
 }
 
+/* Scrollbar species list */
+#speciesList::-webkit-scrollbar {
+  width: 8px;
+}
+#speciesList::-webkit-scrollbar-track {
+  background: transparent;
+}
+#speciesList::-webkit-scrollbar-thumb {
+  background-color: #3a8e3a;
+  border-radius: 20px;
+}
+body[data-theme="dark"] #speciesList::-webkit-scrollbar-thumb {
+  background-color: #adebad;
+}
+
 /* Responsividade */
-@media (max-width: 600px) {
-  .indicators-grid {
-    flex-direction: column;
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.4rem;
+  }
+  .big-number {
+    font-size: 2.2rem;
+  }
+  #map {
+    height: 300px;
   }
 }
