@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EcoTracker - Painel Ambiental</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha384-qcV0E6xx7V6FcGQfCqzqLDz5G5MTNTuqprXcKP9Z+MPU2An9mOtdGQUMNvhgqccF"
+    crossorigin=""
+  />
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
     <h1>🌱 EcoTracker PRO</h1>
-    <p>Monitoramento de CO₂, Árvores e Biodiversidade</p>
+    <p>Monitoramento de CO₂, Árvores, Biodiversidade e Mapa Ambiental</p>
   </header>
+
+  <div id="map"></div>
 
   <main class="charts-container">
     <section class="chart-card">
@@ -34,6 +44,12 @@
     <p>Desenvolvido por EcoTracker PRO • 2025</p>
   </footer>
 
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha384-vsLAOwGk8Zz3FtWo1Kz7HpMGiLgAhgqB3eDkPXGm5kpZtXyQMbBNP1OaOz/9t+vu"
+    crossorigin=""
+  ></script>
   <script src="script.js"></script>
 </body>
 </html>
