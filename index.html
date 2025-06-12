@@ -2,53 +2,61 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EcoTracker PRO 🌱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoTracker PRO</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 </head>
 <body>
   <header>
-    <h1>EcoTracker PRO 🌎</h1>
-    <button id="mode-toggle"><i class="fas fa-moon"></i></button>
+    <h1>🌱 EcoTracker PRO</h1>
+    <button id="mode-toggle" title="Modo Claro/Escuro"><i class="fas fa-moon"></i></button>
   </header>
 
+  <div id="controls">
+    <input type="text" id="search-country" placeholder="🔍 Buscar país..." />
+    <input type="text" id="search-species" placeholder="🔍 Buscar espécie..." />
+    <select id="theme-select">
+      <option value="default">🌎 Tema Global</option>
+      <option value="southamerica">🌳 América do Sul</option>
+      <option value="africa">🦁 África</option>
+      <option value="asia">🐅 Ásia</option>
+      <option value="europe">🐺 Europa</option>
+    </select>
+  </div>
+
   <main>
-    <section id="map-container">
+    <section id="map-section">
       <div id="map"></div>
-      <div id="legend" class="legend"></div>
+      <div id="legend"></div>
     </section>
 
-    <aside id="info-panel">
+    <section id="info-section">
       <h2 id="country-name">Selecione um país</h2>
+      <div id="species-list"></div>
+    </section>
 
-      <div id="search-bar">
-        <input type="text" id="search-country" placeholder="🔍 País..." />
-        <input type="text" id="search-species" placeholder="🔍 Espécie ou status..." />
-      </div>
+    <section id="global-species">
+      <h2>🌐 Espécies Ameaçadas Globalmente</h2>
+      <div id="global-list"></div>
+    </section>
 
-      <div id="species-list" class="scrollable"></div>
-
-      <div id="global-species">
-        <h3>🌍 Espécies Ameaçadas Globalmente</h3>
-        <div id="global-list" class="scrollable"></div>
-      </div>
-
-      <div id="charts">
-        <canvas id="chartCo2"></canvas>
-        <canvas id="chartTrees"></canvas>
-        <canvas id="chartBiodiversity"></canvas>
-      </div>
-    </aside>
+    <section id="charts">
+      <h2>📊 Análises Ambientais</h2>
+      <canvas id="chartCo2"></canvas>
+      <canvas id="chartTrees"></canvas>
+      <canvas id="chartBiodiversity"></canvas>
+      <!-- chartClimate será criado via JS -->
+    </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 EcoTracker PRO. Dados simulados para fins educacionais.</p>
+    <p>© 2025 EcoTracker PRO | Monitoramento ecológico global</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
