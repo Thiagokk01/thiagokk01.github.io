@@ -1,0 +1,39 @@
+{
+  "globalThreatenedSpecies": [
+    {
+      "name": "Tigre",
+      "scientific": "Panthera tigris",
+      "status": "Em Perigo",
+      "region": "Ásia",
+      "color": "#d32f2f"
+    },
+    {
+      "name": "Elefante-Africano",
+      "scientific": "Loxodonta africana",
+      "status": "Vulnerável",
+      "region": "África",
+      "color": "#f57c00"
+    },
+    {
+      "name": "Urso Polar",
+      "scientific": "Ursus maritimus",
+      "status": "Vulnerável",
+      "region": "Ártico",
+      "color": "#0288d1"
+    },
+    {
+      "name": "Panda Gigante",
+      "scientific": "Ailuropoda melanoleuca",
+      "status": "Vulnerável",
+      "region": "China",
+      "color": "#7b1fa2"
+    },
+    {
+      "name": "Arraia Manta",
+      "scientific": "Mobula birostris",
+      "status": "Em Perigo",
+      "region": "Oceania",
+      "color": "#00796b"
+    }
+  ]
+}
