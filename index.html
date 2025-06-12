@@ -2,18 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EcoTracker PRO</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoTracker PRO</title>
+
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 </head>
 <body>
   <header>
     <h1>🌱 EcoTracker PRO</h1>
-    <button id="mode-toggle" title="Modo Claro/Escuro"><i class="fas fa-moon"></i></button>
+    <button id="mode-toggle" title="Alternar modo claro/escuro"><i class="fas fa-moon"></i></button>
   </header>
 
   <div id="controls">
@@ -25,6 +27,8 @@
       <option value="africa">🦁 África</option>
       <option value="asia">🐅 Ásia</option>
       <option value="europe">🐺 Europa</option>
+      <option value="northamerica">🦅 América do Norte</option>
+      <option value="oceania">🐨 Oceania</option>
     </select>
   </div>
 
@@ -46,16 +50,15 @@
 
     <section id="charts">
       <h2>📊 Análises Ambientais</h2>
-      <canvas id="chartCo2"></canvas>
       <canvas id="chartTrees"></canvas>
       <canvas id="chartBiodiversity"></canvas>
-      <!-- chartClimate será criado via JS -->
     </section>
   </main>
-  
+
   <footer>
     <p>© 2025 EcoTracker PRO | Monitoramento ecológico global</p>
   </footer>
+
   <script src="js/script.js" defer></script>
 </body>
 </html>
