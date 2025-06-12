@@ -2,53 +2,35 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EcoTracker PRO 🌱</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoTracker PRO - Gráficos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>EcoTracker PRO 🌎</h1>
-    <button id="mode-toggle"><i class="fas fa-moon"></i></button>
-  </header>
+  <h1>EcoTracker PRO - Monitoramento Ambiental</h1>
 
   <main>
-    <section id="map-container">
-      <div id="map"></div>
-      <div id="legend" class="legend"></div>
+    <section class="chart-container">
+      <h2>Emissão de CO₂ por País</h2>
+      <canvas id="chartCo2" aria-label="Gráfico de CO2" role="img"></canvas>
     </section>
 
-    <aside id="info-panel">
-      <h2 id="country-name">Selecione um país</h2>
+    <section class="chart-container">
+      <h2>Quantidade de Árvores (Ano Atual e Seguinte)</h2>
+      <canvas id="chartTrees" aria-label="Gráfico de árvores" role="img"></canvas>
+    </section>
 
-      <div id="search-bar">
-        <input type="text" id="search-country" placeholder="🔍 País..." />
-        <input type="text" id="search-species" placeholder="🔍 Espécie ou status..." />
-      </div>
-
-      <div id="species-list" class="scrollable"></div>
-
-      <div id="global-species">
-        <h3>🌍 Espécies Ameaçadas Globalmente</h3>
-        <div id="global-list" class="scrollable"></div>
-      </div>
-
-      <div id="charts">
-        <canvas id="chartCo2"></canvas>
-        <canvas id="chartTrees"></canvas>
-        <canvas id="chartBiodiversity"></canvas>
-      </div>
-    </aside>
+    <section class="chart-container">
+      <h2>Índice de Biodiversidade</h2>
+      <canvas id="chartBiodiversity" aria-label="Gráfico de biodiversidade" role="img"></canvas>
+    </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 EcoTracker PRO. Dados simulados para fins educacionais.</p>
+    Dados simulados para fins de demonstração. EcoTracker PRO.
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
