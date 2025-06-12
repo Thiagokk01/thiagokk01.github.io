@@ -1,281 +1,140 @@
-/* Reset básico */
+/* styles.css */
+
+:root {
+  --bg: #ffffff;
+  --text: #222;
+  --accent: #2e8b57;
+  --panel-bg: #f9f9f9;
+  --card-bg: #ffffff;
+}
+
+body.dark-mode {
+  --bg: #121212;
+  --text: #f1f1f1;
+  --accent: #27ae60;
+  --panel-bg: #1e1e1e;
+  --card-bg: #2a2a2a;
+}
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
-  color: #222;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* Dark mode */
-body.dark-mode {
-  background-color: #121212;
-  color: #ddd;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
 
 header {
-  background-color: #2e8b57;
+  background-color: var(--accent);
   color: white;
-  padding: 1rem 2rem;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 
 header h1 {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 
 #mode-toggle {
   background: transparent;
   border: none;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: color 0.3s;
 }
 
-#mode-toggle:hover {
-  color: #a5d6a7;
-}
-
-/* Busca */
-#search-section {
-  background: #e6e6e6;
-  padding: 1rem 2rem;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  transition: background-color 0.3s;
-}
-
-body.dark-mode #search-section {
-  background: #1f1f1f;
-}
-
-#search-section input {
-  flex: 1 1 200px;
-  max-width: 300px;
-  padding: 0.6rem 1rem;
-  border-radius: 30px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  outline-offset: 2px;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-}
-
-body.dark-mode #search-section input {
-  background-color: #2a2a2a;
-  border-color: #444;
-  color: #eee;
-}
-
-#search-section input::placeholder {
-  color: #999;
-}
-
-body.dark-mode #search-section input::placeholder {
-  color: #bbb;
-}
-
-/* Layout principal */
 main {
-  flex: 1;
   display: flex;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  background: transparent;
   flex-wrap: wrap;
+  height: calc(100vh - 80px);
 }
 
-/* Sidebar */
-#sidebar {
-  background: #fff;
-  flex: 1 1 320px;
-  max-width: 320px;
-  border-radius: 10px;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  overflow-y: auto;
-  max-height: calc(100vh - 180px);
-  transition: background-color 0.3s, color 0.3s;
-}
-
-body.dark-mode #sidebar {
-  background: #222;
-  color: #eee;
-}
-
-#sidebar h2 {
-  margin-top: 0;
-  font-weight: 600;
-  font-size: 1.4rem;
-}
-
-#species-list {
-  margin-top: 1rem;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-.species-item {
-  background: #e0f2f1;
-  padding: 0.5rem 0.8rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-}
-
-body.dark-mode .species-item {
-  background: #37474f;
-}
-
-.species-name {
-  font-weight: 700;
-}
-
-.species-scientific {
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-body.dark-mode .species-scientific {
-  color: #aaa;
-}
-
-.species-status {
-  font-weight: 600;
-  margin-top: 0.2rem;
-}
-
-/* Mapa */
-#map-section {
-  flex: 2 1 600px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 0 12px rgba(0,0,0,0.15);
+#map-container {
+  flex: 2;
+  position: relative;
 }
 
 #map {
-  height: 500px;
+  height: 100%;
   width: 100%;
 }
 
-/* Legenda do mapa */
 #legend {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  color: #333;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  border-top: 1px solid #ccc;
-}
-
-body.dark-mode #legend {
-  background: rgba(20, 20, 20, 0.85);
-  color: #ccc;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .legend-color {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+#info-panel {
+  flex: 1;
+  padding: 1rem;
+  background: var(--panel-bg);
+  overflow-y: auto;
+}
+
+#search-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+#search-bar input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.species-item {
+  background: var(--card-bg);
+  padding: 0.7rem;
+  margin-bottom: 0.6rem;
+  border-left: 5px solid var(--accent);
   border-radius: 4px;
 }
 
-/* Gráficos */
-#charts-section {
-  flex: 1 1 100%;
-  padding-top: 1rem;
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.species-name {
+  font-weight: bold;
 }
 
-#charts-section canvas {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  max-width: 300px;
-  width: 100%;
-  height: 220px !important;
-  transition: background-color 0.3s;
+#charts {
+  margin-top: 2rem;
 }
 
-body.dark-mode #charts-section canvas {
-  background: #222;
+canvas {
+  margin-bottom: 2rem;
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
 }
 
-/* Footer */
 footer {
-  background-color: #2e8b57;
-  color: white;
-  padding: 1rem 2rem;
   text-align: center;
-  font-size: 0.9rem;
-  margin-top: auto;
-  box-shadow: 0 -3px 6px rgba(0,0,0,0.2);
-}
-
-/* Scrollbar customizado para sidebar */
-#sidebar::-webkit-scrollbar {
-  width: 10px;
-}
-
-#sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#sidebar::-webkit-scrollbar-thumb {
-  background-color: #6abf69;
-  border-radius: 10px;
-}
-
-body.dark-mode #sidebar::-webkit-scrollbar-thumb {
-  background-color: #9ccc65;
-}
-
-/* Responsividade */
-@media (max-width: 900px) {
-  main {
-    flex-direction: column;
-    padding: 1rem;
-  }
-
-  #sidebar,
-  #map-section,
-  #charts-section {
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
-
-  #map {
-    height: 400px;
-  }
-
-  #charts-section {
-    gap: 1rem;
-  }
+  padding: 1rem;
+  background: var(--accent);
+  color: white;
 }
