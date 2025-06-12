@@ -1,72 +1,90 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EcoTracker PRO</title>
-  <link rel="stylesheet" href="style.css" />
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""
-/>
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin=""
-></script>
-    src="https://cdn.jsdelivr.net/npm/chart.js"
-    defer
-  ></script>
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    crossorigin=""
-    defer
-  ></script>
-  <script src="script.js" defer></script>
+  <title>EcoTracker PRO - Dashboard Ambiental Ultra</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- FontAwesome para ícones -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <!-- Estilo -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body data-theme="light">
-  <header>
-    <h1>EcoTracker PRO</h1>
-    <button id="toggleTheme" title="Alternar tema">
-      <i class="fas fa-moon"></i>
-    </button>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1><i class="fas fa-globe-americas"></i> EcoTracker PRO</h1>
+      <p>Monitoramento Ambiental Mundial</p>
+    </div>
+    <div class="header-right">
+      <button id="mode-toggle" aria-label="Alternar modo claro/escuro" title="Alternar tema claro/escuro">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
   </header>
 
-  <main>
-    <section class="cards-grid">
-      <article class="card">
-        <h2>Cobertura de Árvores</h2>
-        <p id="treeCoverage" class="big-number">--%</p>
-        <canvas id="treeCoverageChart"></canvas>
-      </article>
+  <div class="container">
+    <aside class="sidebar">
+      <section class="filter-section">
+        <h2><i class="fas fa-filter"></i> Filtros</h2>
+        <input
+          type="text"
+          id="search-country"
+          placeholder="Buscar país..."
+          aria-label="Buscar país"
+        />
+        <input
+          type="text"
+          id="search-species"
+          placeholder="Buscar espécie ameaçada..."
+          aria-label="Buscar espécie"
+        />
+      </section>
 
-      <article class="card">
-        <h2>Redução de CO₂</h2>
-        <p id="co2Reduction" class="big-number">--%</p>
-        <canvas id="co2ReductionChart"></canvas>
-      </article>
+      <section class="legend-section">
+        <h2><i class="fas fa-map"></i> Legenda do Mapa</h2>
+        <div id="legend"></div>
+      </section>
+    </aside>
 
-      <article class="card">
-        <h2>Índice de Biodiversidade</h2>
-        <p id="biodiversityIndex" class="big-number">--</p>
-      </article>
-    </section>
+    <main class="main-content">
+      <section class="map-container card">
+        <div id="map"></div>
+      </section>
 
-    <section id="mapSection" class="card">
-      <h2>Mapa Ambiental</h2>
-      <div id="map"></div>
-    </section>
+      <section class="charts-container card">
+        <h2><i class="fas fa-chart-line"></i> Indicadores do País</h2>
+        <div id="country-name" class="country-name">Clique em um país no mapa</div>
+        <canvas id="chartCo2"></canvas>
+        <canvas id="chartTrees"></canvas>
+        <canvas id="chartBiodiversity"></canvas>
+      </section>
 
-    <section id="speciesSection" class="card">
-      <h2>Espécies Ameaçadas</h2>
-      <div id="speciesList"></div>
-    </section>
-  </main>
+      <section class="species-container card">
+        <h2><i class="fas fa-exclamation-triangle"></i> Espécies Ameaçadas</h2>
+        <div id="species-list"></div>
+      </section>
+    </main>
+  </div>
 
-  <footer>
-    <p>© 2025 EcoTracker PRO - Projeto de monitoramento ambiental</p>
+  <footer class="footer">
+    <small>© 2025 EcoTracker PRO — Dados simulados para demonstração</small>
   </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Script principal -->
+  <script src="script.js" defer></script>
 </body>
 </html>
