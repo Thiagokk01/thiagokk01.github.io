@@ -1,216 +1,175 @@
-// script.js - código robusto e comentado para EcoTracker PRO
-
-// ----- Tema claro/escuro -----
-const body = document.body;
-const toggleBtn = document.getElementById('toggleTheme');
-toggleBtn.addEventListener('click', () => {
-  if (body.dataset.theme === 'light') {
-    body.dataset.theme = 'dark';
+// --- Tema claro/escuro ---
+const toggleBtn = document.getElementById("toggleTheme");
+toggleBtn.addEventListener("click", () => {
+  const body = document.body;
+  if (body.getAttribute("data-theme") === "light") {
+    body.setAttribute("data-theme", "dark");
     toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
   } else {
-    body.dataset.theme = 'light';
+    body.setAttribute("data-theme", "light");
     toggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
   }
 });
 
-// ----- Inicialização do mapa Leaflet -----
-const map = L.map('map').setView([-15.7942, -47.8822], 4); // Centro do Brasil
+// --- Dados simulados ---
+const treeCoverageData = [45, 48, 50, 52, 55, 57, 60, 63, 67, 70];
+const co2ReductionData = [5, 8, 10, 15, 20, 25, 30, 33, 38, 45];
+const biodiversityIndex = 78;
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+document.getElementById("treeCoverage").textContent = treeCoverageData.slice(-1)[0] + "%";
+document.getElementById("co2Reduction").textContent = co2ReductionData.slice(-1)[0] + "%";
+document.getElementById("biodiversityIndex").textContent = biodiversityIndex;
 
-// Marcadores por regiões (exemplo)
-const regionsMarkers = [
-  { name: 'Amazônia', coords: [-3.4653, -62.2159], trees: 85, co2: 35 },
-  { name: 'Cerrado', coords: [-15.7801, -47.9292], trees: 48, co2: 20 },
-  { name: 'Mata Atlântica', coords: [-23.5505, -46.6333], trees: 62, co2: 25 },
-  { name: 'Pantanal', coords: [-16.6758, -56.0926], trees: 72, co2: 30 },
-  { name: 'Caatinga', coords: [-9.3975, -40.5039], trees: 40, co2: 15 },
-];
+// --- Gráficos Chart.js ---
 
-// Adiciona marcadores com popups
-regionsMarkers.forEach(region => {
-  const marker = L.marker(region.coords).addTo(map);
-  marker.bindPopup(`
-    <strong>${region.name}</strong><br>
-    Cobertura de árvores: ${region.trees}%<br>
-    Redução de CO₂: ${region.co2}%
-  `);
-});
+const treeCtx = document.getElementById("treeCoverageChart").getContext("2d");
+const co2Ctx = document.getElementById("co2ReductionChart").getContext("2d");
 
-// ----- Atualizar indicadores -----
-const treeCoverageEl = document.getElementById('treeCoverage');
-const co2ReductionEl = document.getElementById('co2Reduction');
-const biodiversityIndexEl = document.getElementById('biodiversityIndex');
-
-// Calcula média simples para exemplo
-function atualizarIndicadores() {
-  const avgTrees = Math.round(
-    regionsMarkers.reduce((acc, cur) => acc + cur.trees, 0) / regionsMarkers.length
-  );
-  const avgCo2 = Math.round(
-    regionsMarkers.reduce((acc, cur) => acc + cur.co2, 0) / regionsMarkers.length
-  );
-  // Biodiversidade simulada
-  const biodiversityIndex = 70 + Math.floor(Math.random() * 20);
-
-  treeCoverageEl.textContent = avgTrees + '%';
-  co2ReductionEl.textContent = avgCo2 + '%';
-  biodiversityIndexEl.textContent = biodiversityIndex;
-}
-atualizarIndicadores();
-
-// ----- Gráfico de barras - Cobertura de Árvores -----
-const ctxTrees = document.getElementById('treeCoverageChart').getContext('2d');
-const treeChart = new Chart(ctxTrees, {
-  type: 'bar',
+const treeChart = new Chart(treeCtx, {
+  type: "line",
   data: {
-    labels: regionsMarkers.map(r => r.name),
-    datasets: [
-      {
-        label: 'Cobertura de Árvores (%)',
-        data: regionsMarkers.map(r => r.trees),
-        backgroundColor: 'rgba(58, 142, 58, 0.7)',
-        borderColor: 'rgba(58, 142, 58, 1)',
-        borderWidth: 1,
-        borderRadius: 5,
-      },
-    ],
+    labels: Array.from({ length: treeCoverageData.length }, (_, i) => 2015 + i),
+    datasets: [{
+      label: "Cobertura de Árvores (%)",
+      data: treeCoverageData,
+      backgroundColor: "rgba(58, 142, 58, 0.3)",
+      borderColor: "#3a8e3a",
+      borderWidth: 2,
+      fill: true,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    }]
   },
   options: {
     responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true }
+    },
     scales: {
       y: {
         beginAtZero: true,
-        max: 100,
-        ticks: {
-          stepSize: 20,
-          color: '#1f4d1f',
-        },
-        grid: {
-          color: '#d9f0d9',
-        },
-      },
-      x: {
-        ticks: {
-          color: '#1f4d1f',
-        },
-        grid: {
-          display: false,
-        },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#3a8e3a',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-      },
-    },
-  },
+        max: 100
+      }
+    }
+  }
 });
 
-// ----- Gráfico pizza - Redução de CO₂ -----
-const ctxCo2 = document.getElementById('co2ReductionChart').getContext('2d');
-const co2Chart = new Chart(ctxCo2, {
-  type: 'doughnut',
+const co2Chart = new Chart(co2Ctx, {
+  type: "bar",
   data: {
-    labels: regionsMarkers.map(r => r.name),
-    datasets: [
-      {
-        label: 'Redução de CO₂ (%)',
-        data: regionsMarkers.map(r => r.co2),
-        backgroundColor: [
-          'rgba(58, 142, 58, 0.7)',
-          'rgba(74, 174, 74, 0.7)',
-          'rgba(98, 190, 98, 0.7)',
-          'rgba(122, 206, 122, 0.7)',
-          'rgba(146, 222, 146, 0.7)',
-        ],
-        borderColor: '#fff',
-        borderWidth: 2,
-      },
-    ],
+    labels: Array.from({ length: co2ReductionData.length }, (_, i) => 2015 + i),
+    datasets: [{
+      label: "Redução de CO₂ (%)",
+      data: co2ReductionData,
+      backgroundColor: "rgba(58, 142, 58, 0.6)",
+      borderColor: "#3a8e3a",
+      borderWidth: 1
+    }]
   },
   options: {
     responsive: true,
-    cutout: '70%',
     plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: '#1f4d1f',
-          font: {
-            weight: '600',
-            size: 14,
-          },
-        },
-      },
-      tooltip: {
-        backgroundColor: '#3a8e3a',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-      },
+      legend: { display: false },
+      tooltip: { enabled: true }
     },
-  },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100
+      }
+    }
+  }
 });
 
-// ----- Fetch de espécies ameaçadas (Simulado) -----
-const speciesListEl = document.getElementById('speciesList');
+// --- Mapa Leaflet ---
+const map = L.map("map").setView([-15.7801, -47.9292], 4); // Brasil - Brasília
 
-// Dados simulados (exemplo, normalmente viria de API real)
-const speciesAmeaçadas = [
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution:
+    '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
+
+// Marcadores exemplo
+const markers = [
+  {
+    coords: [-3.4653, -62.2159],
+    title: "Amazônia - Floresta",
+    description: "Maior floresta tropical do mundo, rica em biodiversidade.",
+  },
+  {
+    coords: [-23.5505, -46.6333],
+    title: "São Paulo - Área Urbana",
+    description: "Monitoramento da área urbana e impacto ambiental.",
+  },
+  {
+    coords: [-22.9068, -43.1729],
+    title: "Rio de Janeiro - Litoral",
+    description: "Monitoramento da qualidade da água e espécies marinhas.",
+  },
+];
+
+markers.forEach(({ coords, title, description }) => {
+  L.marker(coords)
+    .addTo(map)
+    .bindPopup(`<strong>${title}</strong><br>${description}`);
+});
+
+// --- Espécies Ameaçadas ---
+// Exemplo simples de dados, pode expandir ou carregar via fetch
+const speciesData = [
   {
     name: "Onça-pintada",
     scientificName: "Panthera onca",
     status: "Vulnerável",
-  },
-  {
-    name: "Arara-azul-grande",
-    scientificName: "Anodorhynchus hyacinthinus",
-    status: "Em perigo",
-  },
-  {
-    name: "Tartaruga-de-couro",
-    scientificName: "Dermochelys coriacea",
-    status: "Criticamente em perigo",
+    region: "América do Sul",
+    color: "#FFA500", // laranja
   },
   {
     name: "Mico-leão-dourado",
     scientificName: "Leontopithecus rosalia",
     status: "Em perigo",
+    region: "Brasil",
+    color: "#FF4500", // vermelho forte
   },
   {
-    name: "Boto-cor-de-rosa",
-    scientificName: "Inia geoffrensis",
+    name: "Tartaruga-de-couro",
+    scientificName: "Dermochelys coriacea",
+    status: "Criticamente em perigo",
+    region: "Oceano Atlântico",
+    color: "#FF0000", // vermelho
+  },
+  {
+    name: "Arara-azul",
+    scientificName: "Anodorhynchus hyacinthinus",
     status: "Vulnerável",
+    region: "América do Sul",
+    color: "#FFA500",
   },
 ];
 
-// Função para mostrar as espécies no DOM
-function mostrarEspecies(especies) {
-  speciesListEl.innerHTML = ''; // Limpa lista
+const speciesListEl = document.getElementById("speciesList");
 
-  especies.forEach(especie => {
-    const item = document.createElement('article');
-    item.className = 'species-item';
-    item.tabIndex = 0;
+function mostrarEspecies(especies) {
+  speciesListEl.innerHTML = ""; // limpa
+
+  especies.forEach((especie) => {
+    const item = document.createElement("div");
+    item.className = "species-item";
     item.innerHTML = `
       <p class="species-name">${especie.name}</p>
       <p class="species-scientific">${especie.scientificName}</p>
-      <p class="species-status">Status: ${especie.status}</p>
+      <p class="species-status" style="color:${especie.color}">Status: ${especie.status} - ${especie.region}</p>
     `;
     speciesListEl.appendChild(item);
   });
 }
-mostrarEspecies(speciesAmeaçadas);
+
+mostrarEspecies(speciesData);
 
 // Atualização automática (exemplo, a cada 60 segundos)
 setInterval(() => {
-  // No futuro pode-se buscar dados reais via fetch...
-  mostrarEspecies(speciesAmeaçadas);
+  mostrarEspecies(speciesData);
 }, 60000);
