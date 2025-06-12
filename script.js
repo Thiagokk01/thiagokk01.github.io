@@ -1,53 +1,39 @@
-// EcoTracker PRO - Script principal
-// Responsável pelo mapa, gráficos, filtros, modo claro/escuro, legenda e interação
-
 document.addEventListener('DOMContentLoaded', () => {
-  let map, countryLayer;
-  let currentCountry = null;
-
-  // Dados simulados para 5 países, valores para os últimos 5 anos (2021 a 2025)
+  // Dados simulados
   const countriesData = {
     Brazil: {
-      co2: [1500, 1400, 1300, 1200, 1100],
-      trees: [5000, 5200, 5300, 5400, 5500],
-      biodiversity: [2000, 2100, 2200, 2300, 2400],
+      co2: [500, 480, 460, 440, 420],
+      trees: [1200, 1250, 1300, 1400, 1500],
+      biodiversity: [80, 82, 85, 87, 90],
     },
     USA: {
-      co2: [5000, 4900, 4800, 4700, 4600],
-      trees: [3000, 3100, 3200, 3300, 3400],
-      biodiversity: [1500, 1400, 1300, 1200, 1100],
+      co2: [600, 590, 580, 570, 560],
+      trees: [900, 920, 930, 940, 950],
+      biodiversity: [70, 71, 72, 74, 75],
     },
     Canada: {
-      co2: [1000, 980, 960, 940, 920],
-      trees: [6000, 6100, 6200, 6300, 6400],
-      biodiversity: [800, 850, 900, 950, 1000],
+      co2: [300, 295, 290, 285, 280],
+      trees: [1000, 1050, 1075, 1100, 1125],
+      biodiversity: [75, 77, 78, 80, 82],
     },
     India: {
-      co2: [2000, 1900, 1850, 1800, 1750],
-      trees: [2500, 2600, 2700, 2800, 2900],
-      biodiversity: [900, 920, 940, 960, 980],
+      co2: [700, 710, 720, 730, 740],
+      trees: [600, 620, 650, 670, 690],
+      biodiversity: [65, 66, 67, 68, 69],
     },
     Australia: {
-      co2: [800, 780, 770, 760, 750],
-      trees: [1500, 1520, 1530, 1540, 1550],
-      biodiversity: [700, 710, 720, 730, 740],
+      co2: [400, 390, 380, 370, 360],
+      trees: [500, 520, 530, 540, 550],
+      biodiversity: [68, 70, 72, 73, 75],
     },
   };
 
-  // Espécies ameaçadas simuladas
   const threatenedSpecies = [
     {
-      name: 'Tigre-da-bengala',
-      scientific: 'Panthera tigris tigris',
-      status: 'Criticamente em perigo',
-      region: 'Ásia',
-      color: '#d9534f',
-    },
-    {
-      name: 'Tartaruga-de-couro',
-      scientific: 'Dermochelys coriacea',
+      name: 'Onça-pintada',
+      scientific: 'Panthera onca',
       status: 'Vulnerável',
-      region: 'Oceanos',
+      region: 'América do Sul',
       color: '#f0ad4e',
     },
     {
@@ -55,13 +41,34 @@ document.addEventListener('DOMContentLoaded', () => {
       scientific: 'Anodorhynchus hyacinthinus',
       status: 'Em perigo',
       region: 'América do Sul',
-      color: '#d9534f',
+      color: '#ffeb3b',
+    },
+    {
+      name: 'Tigre-de-bengala',
+      scientific: 'Panthera tigris tigris',
+      status: 'Em perigo',
+      region: 'Ásia',
+      color: '#ffeb3b',
     },
     {
       name: 'Panda Gigante',
       scientific: 'Ailuropoda melanoleuca',
       status: 'Vulnerável',
-      region: 'China',
+      region: 'Ásia',
+      color: '#f0ad4e',
+    },
+    {
+      name: 'Canguru-vermelho',
+      scientific: 'Macropus rufus',
+      status: 'Em perigo',
+      region: 'Oceania',
+      color: '#ffeb3b',
+    },
+    {
+      name: 'Águia-careca',
+      scientific: 'Haliaeetus leucocephalus',
+      status: 'Vulnerável',
+      region: 'América do Norte',
       color: '#f0ad4e',
     },
     {
@@ -73,22 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   ];
 
-  // Anos para gráficos
   const years = ['2021', '2022', '2023', '2024', '2025'];
 
-  // Inicializa o mapa Leaflet
+  let map;
+  let currentCountry = null;
+
   function initMap() {
     map = L.map('map').setView([-15, -55], 3);
 
-    // OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 6,
       minZoom: 2,
       attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
-    // Simples camada para países (simulada)
-    // Para simplificar, vamos usar marcadores para representar países
     Object.keys(countriesData).forEach((country) => {
       let coords = getCountryCoords(country);
       if (!coords) return;
@@ -110,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Coordenadas aproximadas dos países no mapa
   function getCountryCoords(country) {
     const coordsMap = {
       Brazil: [-14.235, -51.9253],
@@ -122,25 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return coordsMap[country] || null;
   }
 
-  // Função para atualizar dados quando um país é selecionado
   function selectCountry(country) {
     currentCountry = country;
     const data = countriesData[country];
 
-    // Atualiza nome do país
     const countryNameEl = document.getElementById('country-name');
     countryNameEl.textContent = `Dados para ${country}`;
 
-    // Atualiza lista de espécies ameaçadas para o país selecionado
     updateSpeciesList(country);
-
-    // Atualiza gráficos
     updateCharts(data);
   }
 
-  // Atualiza a lista de espécies ameaçadas filtrando pela região do país
   function updateSpeciesList(country) {
-    // Mapear país para região para filtro
     const regionMap = {
       Brazil: 'América do Sul',
       USA: 'América do Norte',
@@ -152,14 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const region = regionMap[country] || '';
 
     const speciesContainer = document.getElementById('species-list');
-    speciesContainer.innerHTML = ''; // limpa
+    speciesContainer.innerHTML = '';
 
     const filtered = threatenedSpecies.filter(
       (sp) => sp.region === region || sp.region === country
     );
 
     if (filtered.length === 0) {
-      speciesContainer.innerHTML = '<p>Sem espécies ameaçadas cadastradas para este país.</p>';
+      speciesContainer.innerHTML =
+        '<p>Sem espécies ameaçadas cadastradas para este país.</p>';
       return;
     }
 
@@ -175,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Inicializa os gráficos Chart.js
   let chartCo2, chartTrees, chartBiodiversity;
   function initCharts() {
     const ctxCo2 = document.getElementById('chartCo2').getContext('2d');
@@ -198,16 +195,18 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'line',
       data: {
         labels: years,
-        datasets: [{
-          label: 'CO₂ (toneladas)',
-          data: [],
-          borderColor: '#27ae60',
-          backgroundColor: 'rgba(39, 174, 96, 0.3)',
-          fill: true,
-          tension: 0.3,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-        }],
+        datasets: [
+          {
+            label: 'CO₂ (toneladas)',
+            data: [],
+            borderColor: '#27ae60',
+            backgroundColor: 'rgba(39, 174, 96, 0.3)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+        ],
       },
       options: commonOptions,
     });
@@ -216,11 +215,13 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'bar',
       data: {
         labels: years,
-        datasets: [{
-          label: 'Árvores',
-          data: [],
-          backgroundColor: '#558b2f',
-        }],
+        datasets: [
+          {
+            label: 'Árvores',
+            data: [],
+            backgroundColor: '#558b2f',
+          },
+        ],
       },
       options: commonOptions,
     });
@@ -229,22 +230,23 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'line',
       data: {
         labels: years,
-        datasets: [{
-          label: 'Biodiversidade',
-          data: [],
-          borderColor: '#c27ba0',
-          backgroundColor: 'rgba(194, 123, 160, 0.3)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-        }],
+        datasets: [
+          {
+            label: 'Biodiversidade',
+            data: [],
+            borderColor: '#c27ba0',
+            backgroundColor: 'rgba(194, 123, 160, 0.3)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+        ],
       },
       options: commonOptions,
     });
   }
 
-  // Atualiza os gráficos com dados do país selecionado
   function updateCharts(data) {
     if (!data) return;
 
@@ -257,13 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
     chartBiodiversity.update();
   }
 
-  // Filtro da busca de países
   const searchCountryInput = document.getElementById('search-country');
   searchCountryInput.addEventListener('input', () => {
     const val = searchCountryInput.value.trim().toLowerCase();
     if (!val) return;
 
-    // Se existe o país com esse nome (início ou completo), seleciona ele
     const matched = Object.keys(countriesData).find((c) =>
       c.toLowerCase().startsWith(val)
     );
@@ -272,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Filtro da busca de espécies
   const searchSpeciesInput = document.getElementById('search-species');
   searchSpeciesInput.addEventListener('input', () => {
     const val = searchSpeciesInput.value.trim().toLowerCase();
@@ -308,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Modo claro / escuro
   const modeToggleBtn = document.getElementById('mode-toggle');
   modeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
@@ -322,24 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Legenda para o mapa
-  function createLegend() {
-    const legend = document.getElementById('legend');
-    legend.innerHTML = `
-      <h4>Legenda do Mapa</h4>
-      <div><span style="background:#27ae60;"></span>Países monitorados</div>
-      <div><span style="background:#d9534f;"></span>Espécies Criticamente em perigo</div>
-      <div><span style="background:#f0ad4e;"></span>Espécies Vulneráveis</div>
-      <div><span style="background:#ffeb3b;"></span>Espécies Em perigo</div>
-    `;
-  }
-
-  // Inicializa tudo
-  function init() {
-    initMap();
-    initCharts();
-    createLegend();
-  }
-
-  init();
+  // Inicialização
+  initMap();
+  initCharts();
 });
