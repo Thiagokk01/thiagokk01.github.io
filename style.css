@@ -110,4 +110,55 @@ button#buscarDados:disabled {
     background: #f9f9f9;
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 0 12px
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+#speciesPanel h2 {
+    margin-top: 0;
+}
+
+#speciesSearch {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#speciesList {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background: white;
+}
+
+#speciesList div {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+#speciesList div:hover {
+    background: #d6f0d6;
+}
+
+button#view-all {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #2e8b57;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    padding: 15px 0;
+    background: #2e8b57;
+    color: white;
+    font-size: 0.9rem;
+}
