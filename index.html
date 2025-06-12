@@ -1,90 +1,93 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>EcoTracker PRO - Monitoramento Avançado de Reflorestamento</title>
+    <title>EcoTracker PRO - Monitoramento Ambiental</title>
     
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-    <!-- Fonte Poppins (opcional) -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-    <style>
-        /* CSS simples para o mapa e contadores */
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0; padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        header {
-            background-color: #2e8b57;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.5rem;
-        }
-        #map {
-            flex-grow: 1;
-        }
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            padding: 1rem;
-            background-color: #f5f5f5;
-        }
-        .stat {
-            text-align: center;
-            font-size: 1.2rem;
-        }
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2e8b57;
-        }
-    </style>
+    <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+        integrity="sha256-sA+oNk7QzI6cC6Qp7oMGO6QhV24pFy4hVUoCe+M8Jr0=" 
+        crossorigin=""
+    />
+    <!-- MarkerCluster CSS -->
+    <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    />
+    <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    />
+    <!-- FontAwesome para ícones -->
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        integrity="sha512-pEMM1sxv+v7c5u5KVh+9o7FbZT9dJW4UYdM/E+2f+89+VFFRjnSrb2PLqZT/uFG9AA1TtMWw7hYp2hpXKfP2DQ==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" 
+    />
+    
+    <!-- CSS local -->
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<header>
-    <i class="fas fa-seedling"></i> EcoTracker PRO
-</header>
-
-<div id="map"></div>
-
-<div class="stats">
-    <div class="stat">
-        Árvores Plantadas<br />
-        <span id="treeCount" class="stat-value">0</span>
-    </div>
-    <div class="stat">
-        Espécies Diferentes<br />
-        <span id="speciesCount" class="stat-value">0</span>
-    </div>
-    <div class="stat">
-        CO₂ Absorvido (t/ano)<br />
-        <span id="co2Count" class="stat-value">0</span>
-    </div>
-</div>
-
-<!-- Scripts -->
-
-<!-- FontAwesome para ícones (opcional, mas recomendável) -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- CountUp.js -->
-<script src="https://cdn.jsdelivr.net/npm/countup.js@2.3.2/dist/countUp.min.js"></script>
-
-<!-- Seu script personalizado -->
-<script src="script.js"></script>
-
-</body>
-</html>
+    <header>
+        <h1>EcoTracker PRO</h1>
+        <p>Monitoramento Avançado da Biodiversidade e Impacto Ambiental</p>
+    </header>
+    
+    <section id="controls">
+        <div class="control-group">
+            <label for="regiao">Região:</label>
+            <select id="regiao">
+                <option value="global">Global</option>
+                <option value="america-sul">América do Sul</option>
+                <option value="america-norte">América do Norte</option>
+                <option value="europa">Europa</option>
+                <option value="asia">Ásia</option>
+                <option value="africa">África</option>
+                <option value="oceania">Oceania</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="tipoVisualizacao">Visualização:</label>
+            <select id="tipoVisualizacao">
+                <option value="heatmap">Mapa de Calor</option>
+                <option value="cluster">Clusters</option>
+                <option value="pontos">Pontos Individuais</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="dataInicio">Data Início:</label>
+            <input type="date" id="dataInicio" />
+        </div>
+        <div class="control-group">
+            <label for="dataFim">Data Fim:</label>
+            <input type="date" id="dataFim" />
+        </div>
+        <button id="buscarDados">
+            <span id="buttonText">Atualizar Visualização</span>
+            <span id="buttonLoading" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+    </section>
+    
+    <main>
+        <div id="map" style="height: 500px;"></div>
+        
+        <section id="statistics">
+            <div class="stat-item">
+                <h3>Árvores Plantadas</h3>
+                <div id="tree-count">0</div>
+            </div>
+            <div class="stat-item">
+                <h3>Espécies Diferentes</h3>
+                <div id="species-count">0</div>
+            </div>
+            <div class="stat-item">
+                <h3>Redução de CO₂ (t)</h3>
+                <div id="co2-count">0</div>
+            </div>
+        </
