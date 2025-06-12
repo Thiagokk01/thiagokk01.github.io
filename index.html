@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTracker PRO - Monitoramento Avançado de Reflorestamento</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <h1 class="logo">
+                    <i class="fas fa-seedling"></i> EcoTracker<span class="logo-highlight">PRO</span>
+                </h1>
+                <p class="logo-subtitle">Monitoramento Inteligente de Florestas</p>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link active"><i class="fas fa-map-marked-alt"></i> Mapa</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-chart-pie"></i> Analytics</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-tree"></i> Espécies</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-database"></i> Relatórios</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-cog"></i> Config</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <button class="btn-notification">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Usuario&background=2e8b57&color=fff" alt="Usuário">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-header">
+            <h2><i class="fas fa-globe-americas"></i> Painel Global de Reflorestamento</h2>
+            <div class="dashboard-actions">
+                <button class="btn-export"><i class="fas fa-file-export"></i> Exportar</button>
+                <button class="btn-share"><i class="fas fa-share-alt"></i> Compartilhar</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Painel do Mapa (Atualizado) -->
+            <section class="card card-map">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2 class="card-title">
+                            <i class="fas fa-map-marked-alt"></i>
+                            Mapa de Densidade Florestal
+                        </h2>
+                        <div class="card-subtitle">Visualização em tempo real</div>
+                    </div>
+                    <div class="card-header-right">
+                        <div class="last-update">
+                            <i class="fas fa-sync-alt"></i> Atualizado: <span id="update-time">Agora</span>
+                        </div>
+                        <div class="map-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #2e8b57;"></span>
+                                <span class="legend-label">Baixa densidade</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #ffd700;"></span>
+                                <span class="legend-label">Média densidade</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #ff4500;"></span>
+                                <span class="legend-label">Alta densidade</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-controls">
+                    <div class="control-group">
+                        <label for="dataSelecionada"><i class="fas fa-calendar-day"></i> Período</label>
+                        <div class="date-range-picker">
+                            <input type="date" id="dataInicio" class="date-input">
+                            <span class="date-separator">até</span>
+                            <input type="date" id="dataFim" class="date-input">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="regiao"><i class="fas fa-globe"></i> Região</label>
+                        <select id="regiao" class="styled-select">
+                            <option value="global">Global</option>
+                            <option value="america-sul">América do Sul</option>
+                            <option value="america-norte">América do Norte</option>
+                            <option value="europa">Europa</option>
+                            <option value="asia">Ásia</option>
+                            <option value="africa">África</option>
+                            <option value="oceania">Oceania</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="tipoVisualizacao"><i class="fas fa-layer-group"></i> Visualização</label>
+                        <select id="tipoVisualizacao" class="styled-select">
+                            <option value="heatmap">Mapa de Calor</option>
+                            <option value="cluster">Agrupamento</option>
+                            <option value="points">Pontos Individuais</option>
+                        </select>
+                    </div>
+                    <button id="buscarDados" class="btn-primary">
+                        <span id="buttonText">Atualizar Visualização</span>
+                        <span id="buttonLoading" class="loading"></span>
+                    </button>
+                </div>
+
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div id="map-overlay">
+                        <div class="overlay-content">
+                            <div class="overlay-stat">
+                                <i class="fas fa-tree"></i>
+                                <span id="tree-count">0</span>
+                                <span class="stat-label">Árvores</span>
+                            </div>
+                            <div class="overlay-stat">
+                                <i class="fas fa-leaf"></i>
+                                <span id="species-count">0</span>
+                                <span class="stat-label">Espécies</span>
+                            </div>
+                            <div class="overlay-stat">
+                                <i class="fas fa-cloud"></i>
+                                <span id="co2-count">0</span>
+                                <span class="stat-label">t CO2/ano</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Painel de Estatísticas (Novo) -->
+            <section class="card card-stats">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Métricas Ambientais
+                    </h2>
+                    <div class="time-filter">
+                        <button class="time-btn active">24h</button>
+                        <button class="time-btn">7d</button>
+                        <button class="time-btn">30d</button>
+                        <button class="time-btn">1a</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-trees">0</div>
+                            <div class="stat-label">Árvores Plantadas</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 12% vs período anterior
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-species">0</div>
+                            <div class="stat-label">Espécies Diferentes</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 5% vs período anterior
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-co2">0</div>
+                            <div class="stat-label">CO2 Absorvido (t/ano)</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 18% vs período anterior
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-oxigenio">0</div>
+                            <div class="stat-label">Oxigênio Gerado (t/ano)</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 15% vs período anterior
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="co2Chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Painel de Espécies (Atualizado) -->
+            <section class="card card-species">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-seedling"></i>
+                        Biodiversidade
+                    </h2>
+                    <div class="species-filter">
+                        <input type="text" id="speciesSearch" placeholder="Buscar espécie...">
+                        <button class="btn-filter"><i class="fas fa-filter"></i> Filtrar</button>
+                    </div>
+                </div>
+
+                <div class="species-container">
+                    <div class="species-list" id="speciesList">
+                        <!-- Itens serão gerados dinamicamente pelo JavaScript -->
+                    </div>
+                    <div class="species-chart">
+                        <canvas id="speciesChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Painel de Atividades (Novo) -->
+            <section class="card card-activity">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-history"></i>
+                        Histórico de Atividades
+                    </h2>
+                    <button class="btn-text">
+                        Ver Tudo <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="activity-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-badge success">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Novo plantio registrado</div>
+                            <div class="timeline-date">Hoje, 10:45 AM</div>
+                            <div class="timeline-desc">1,245 árvores plantadas na região Nordeste</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-badge warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Alerta de desmatamento</div>
+                            <div class="timeline-date">Ontem, 3:22 PM</div>
+                            <div class="timeline-desc">Atividade suspeita detectada na Amazônia</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-badge primary">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Novo colaborador</div>
+                            <div class="timeline-date">Ontem, 9:15 AM</div>
+                            <div class="timeline-desc">Instituto Terra Verde se juntou ao projeto</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-seedling"></i> EcoTracker<span>PRO</span>
+                </div>
+                <p class="footer-description">
+                    Plataforma avançada de monitoramento e análise de projetos de reflorestamento global.
+                </p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h3>Plataforma</h3>
+                    <a href="#">Mapa Interativo</a>
+                    <a href="#">Análises</a>
+                    <a href="#">Relatórios</a>
+                    <a href="#">API</a>
+                </div>
+                <div class="link-group">
+                    <h3>Recursos</h3>
+                    <a href="#">Documentação</a>
+                    <a href="#">Tutoriais</a>
+                    <a href="#">Webinars</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="link-group">
+                    <h3>Empresa</h3>
+                    <a href="#">Sobre Nós</a>
+                    <a href="#">Parceiros</a>
+                    <a href="#">Carreiras</a>
+                    <a href="#">Contato</a>
+                </div>
+            </div>
+            <div class="footer-newsletter">
+                <h3>Assine nossa newsletter</h3>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="Seu e-mail">
+                    <button class="btn-subscribe">Assinar</button>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2023 EcoTracker PRO. Todos os direitos reservados.</p>
+            <div class="legal-links">
+                <a href="#">Termos de Serviço</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/countup.js@2.3.2/dist/countUp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="js/script.js"></script>
+</body>
+                              </html>
