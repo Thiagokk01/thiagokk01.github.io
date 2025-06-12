@@ -1,218 +1,212 @@
-// --- Inicialização do mapa Leaflet ---
-const map = L.map('map').setView([20, 0], 2);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors',
-  maxZoom: 6,
-}).addTo(map);
-
-// --- Dados dos países ---
-const countriesData = {
-  brazil: {
-    name: "Brasil",
-    continent: "southamerica",
-    coords: [-14.2350, -51.9253],
-    treeCoverage: 58,
-    biodiversityIndex: 85,
-    threatenedSpecies: [
-      {name: "Onça-pintada", link: "https://pt.wikipedia.org/wiki/Onça-pintada"},
-      {name: "Arara-azul", link: "https://pt.wikipedia.org/wiki/Arara-azul"},
-      {name: "Mico-leão-dourado", link: "https://pt.wikipedia.org/wiki/Mico-leão-dourado"},
-    ],
-  },
-  usa: {
-    name: "Estados Unidos",
-    continent: "northamerica",
-    coords: [37.0902, -95.7129],
-    treeCoverage: 33,
-    biodiversityIndex: 75,
-    threatenedSpecies: [
-      {name: "Águia-careca", link: "https://pt.wikipedia.org/wiki/Águia-careca"},
-      {name: "Lobo-cinzento", link: "https://pt.wikipedia.org/wiki/Lobo-cinzento"},
-      {name: "Puma", link: "https://pt.wikipedia.org/wiki/Puma"},
-    ],
-  },
-  india: {
-    name: "Índia",
-    continent: "asia",
-    coords: [20.5937, 78.9629],
-    treeCoverage: 24,
-    biodiversityIndex: 80,
-    threatenedSpecies: [
-      {name: "Tigre-de-bengala", link: "https://pt.wikipedia.org/wiki/Tigre-de-bengala"},
-      {name: "Elefante-asiático", link: "https://pt.wikipedia.org/wiki/Elefante-asiático"},
-      {name: "Pangolim", link: "https://pt.wikipedia.org/wiki/Pangolim"},
-    ],
-  },
-  southafrica: {
-    name: "África do Sul",
-    continent: "africa",
-    coords: [-30.5595, 22.9375],
-    treeCoverage: 7,
-    biodiversityIndex: 70,
-    threatenedSpecies: [
-      {name: "Rinoceronte-negro", link: "https://pt.wikipedia.org/wiki/Rinoceronte-negro"},
-      {name: "Leopardo", link: "https://pt.wikipedia.org/wiki/Leopardo"},
-      {name: "Tartaruga-de-pente", link: "https://pt.wikipedia.org/wiki/Tartaruga-de-pente"},
-    ],
-  },
-};
-
-// --- Lista global de espécies ameaçadas ---
-const globalThreatenedSpecies = [
-  {name: "Gorila-das-montanhas", link: "https://pt.wikipedia.org/wiki/Gorila-das-montanhas"},
-  {name: "Panda-gigante", link: "https://pt.wikipedia.org/wiki/Panda-gigante"},
-  {name: "Tigre-de-sumatra", link: "https://pt.wikipedia.org/wiki/Tigre-de-sumatra"},
-  {name: "Lêmure-de-cauda-anelada", link: "https://pt.wikipedia.org/wiki/Lêmure-de-cauda-anelada"},
+// Dados por país (mesmo que antes)
+const countriesData = [
+  /* ... como antes ... */
 ];
 
-// --- Variáveis para controle ---
-let currentCountryKey = null;
+// Lista global de espécies ameaçadas
+const globalThreatenedSpecies = [
+  { name: "Tigre", scientific: "Panthera tigris", status: "Em Perigo", region: "Ásia", color: "#d32f2f" },
+  { name: "Elefante-Africano", scientific: "Loxodonta africana", status: "Vulnerável", region: "África", color: "#f57c00" },
+  { name: "Urso Polar", scientific: "Ursus maritimus", status: "Vulnerável", region: "Ártico", color: "#0288d1" },
+  { name: "Panda Gigante", scientific: "Ailuropoda melanoleuca", status: "Vulnerável", region: "China", color: "#7b1fa2" },
+  { name: "Arraia Manta", scientific: "Mobula birostris", status: "Em Perigo", region: "Oceania", color: "#00796b" }
+];
 
-// --- Elementos DOM ---
-const countryNameEl = document.getElementById('country-name');
-const speciesListEl = document.getElementById('species-list');
-const globalListEl = document.getElementById('global-list');
-const themeSelectEl = document.getElementById('theme-select');
-const modeToggleBtn = document.getElementById('mode-toggle');
-const searchCountryInput = document.getElementById('search-country');
-const searchSpeciesInput = document.getElementById('search-species');
+// Dados simulados de árvores e clima por país
+countriesData.forEach(c => {
+  c.treesYearly = c.trees * 1.1;  // exemplo: aumento de 10%
+  c.temperature = Math.round(Math.random() * 15 + 10);  // temp média
+});
 
-// --- Função para mostrar dados do país ---
-function showCountryData(key) {
-  if (!countriesData[key]) return;
-  currentCountryKey = key;
-  const country = countriesData[key];
-  countryNameEl.textContent = country.name;
+let map, markers = [], currentCountry = null;
+let chartCo2, chartTrees, chartBiodiversity, chartClimate;
 
-  // Limpar lista anterior
-  speciesListEl.innerHTML = "";
+function initMap() {
+  map = L.map("map").setView([20,0],2);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 
-  country.threatenedSpecies.forEach(species => {
-    const div = document.createElement('div');
-    div.classList.add('species-item');
-    div.innerHTML = `<a href="${species.link}" target="_blank" rel="noopener">${species.name}</a>`;
-    speciesListEl.appendChild(div);
+  countriesData.forEach(country => {
+    const marker = L.circleMarker(country.latlng, {
+      radius: 10,
+      fillColor: "#2e8b57",
+      color: "#1b4d3e",
+      weight: 2,
+      fillOpacity: 0.8,
+    }).addTo(map)
+      .bindTooltip(country.name)
+      .on("click", () => selectCountry(country));
+
+    markers.push(marker);
   });
+}
 
-  // Centralizar mapa no país
-  map.setView(country.coords, 4);
+function selectCountry(country) {
+  currentCountry = country;
+  map.setView(country.latlng, 5);
+  document.getElementById("country-name").textContent = country.name;
+
+  const speciesList = document.getElementById("species-list");
+  speciesList.innerHTML = "";
+  country.species.forEach(sp => {
+    const div = document.createElement("div");
+    div.className = "species-item";
+    div.innerHTML = `
+      <div class="species-name">${sp.name}</div>
+      <div class="species-scientific">${sp.scientific}</div>
+      <div class="species-status" style="color:${sp.color}">Status: ${sp.status}</div>
+      <div class="species-region">Região: ${sp.region}</div>
+    `;
+    speciesList.appendChild(div);
+  });
 
   updateCharts(country);
 }
 
-// --- Mostrar lista global ---
-function populateGlobalSpecies() {
-  globalListEl.innerHTML = "";
-  globalThreatenedSpecies.forEach(species => {
-    const div = document.createElement('div');
-    div.classList.add('species-item');
-    div.textContent = species.name;
-    div.title = "Clique para ver espécies deste país relacionado";
-    div.style.cursor = "default";
-    globalListEl.appendChild(div);
+function displayGlobalSpecies() {
+  const container = document.getElementById("global-list");
+  container.innerHTML = "";
+  globalThreatenedSpecies.forEach(sp => {
+    const div = document.createElement("div");
+    div.className = "species-item";
+    div.innerHTML = `
+      <div class="species-name">${sp.name}</div>
+      <div class="species-scientific">${sp.scientific}</div>
+      <div class="species-status" style="color:${sp.color}">${sp.status}</div>
+      <div class="species-region">${sp.region}</div>
+    `;
+    container.appendChild(div);
   });
 }
 
-// --- Pesquisa países ---
-searchCountryInput.addEventListener('input', e => {
-  const val = e.target.value.toLowerCase();
+function createCharts() {
+  // CO2
+  chartCo2 = new Chart(document.getElementById("chartCo2"), {
+    type: "bar",
+    data: {
+      labels: countriesData.map(c => c.name),
+      datasets: [{
+        label: "Emissão CO₂",
+        data: countriesData.map(c => c.co2),
+        backgroundColor: "#27ae60",
+      }],
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } },
+  });
 
-  const foundKey = Object.keys(countriesData).find(key => 
-    countriesData[key].name.toLowerCase().includes(val)
-  );
+  // Árvores (anual)
+  chartTrees = new Chart(document.getElementById("chartTrees"), {
+    type: "line",
+    data: {
+      labels: countriesData.map(c => c.name),
+      datasets: [{
+        label: "Árvores (total e anual)",
+        data: countriesData.map(c => c.trees),
+        borderColor: "#2e8b57", backgroundColor: "rgba(46,139,87,0.5)",
+        fill: true,
+      }, {
+        label: "Árvores (ano seguinte)",
+        data: countriesData.map(c => Math.round(c.treesYearly)),
+        borderColor: "#145214", backgroundColor: "rgba(20,82,20,0.3)",
+        fill: true,
+      }]
+    },
+    options: { responsive: true },
+  });
 
-  if(foundKey) showCountryData(foundKey);
-});
+  // Biodiversidade
+  chartBiodiversity = new Chart(document.getElementById("chartBiodiversity"), {
+    type: "radar",
+    data: {
+      labels: countriesData.map(c => c.name),
+      datasets: [{
+        label: "Biodiversidade",
+        data: countriesData.map(c => c.biodiversity),
+        backgroundColor: "rgba(39,174,96,0.4)",
+        borderColor: "#27ae60"
+      }]
+    },
+    options: { responsive: true },
+  });
 
-// --- Pesquisa espécies ---
-searchSpeciesInput.addEventListener('input', e => {
-  const val = e.target.value.toLowerCase();
-  if (!currentCountryKey) return;
-
-  const country = countriesData[currentCountryKey];
-  speciesListEl.innerHTML = "";
-
-  country.threatenedSpecies
-    .filter(species => species.name.toLowerCase().includes(val))
-    .forEach(species => {
-      const div = document.createElement('div');
-      div.classList.add('species-item');
-      div.innerHTML = `<a href="${species.link}" target="_blank" rel="noopener">${species.name}</a>`;
-      speciesListEl.appendChild(div);
-    });
-});
-
-// --- Troca de tema por continente ---
-themeSelectEl.addEventListener('change', e => {
-  const theme = e.target.value;
-  document.body.className = ''; // limpa todos
-  if (theme !== 'default') {
-    document.body.classList.add(`theme-${theme}`);
-  }
-});
-
-// --- Modo claro / escuro ---
-modeToggleBtn.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  const icon = modeToggleBtn.querySelector('i');
-  if(document.body.classList.contains('dark-mode')) {
-    icon.className = "fas fa-sun";
-  } else {
-    icon.className = "fas fa-moon";
-  }
-});
-
-// --- Gráficos Chart.js ---
-const treeCoverageChartCtx = document.getElementById('chartTrees').getContext('2d');
-const biodiversityChartCtx = document.getElementById('chartBiodiversity').getContext('2d');
-
-const treeCoverageChart = new Chart(treeCoverageChartCtx, {
-  type: 'bar',
-  data: {
-    labels: Object.values(countriesData).map(c => c.name),
-    datasets: [{
-      label: 'Cobertura de Árvores (%)',
-      data: Object.values(countriesData).map(c => c.treeCoverage),
-      backgroundColor: 'rgba(34,139,34,0.6)',
-      borderColor: 'rgba(34,139,34,1)',
-      borderWidth: 1
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: { beginAtZero: true, max: 100 }
-    }
-  }
-});
-
-const biodiversityChart = new Chart(biodiversityChartCtx, {
-  type: 'line',
-  data: {
-    labels: Object.values(countriesData).map(c => c.name),
-    datasets: [{
-      label: 'Índice de Biodiversidade',
-      data: Object.values(countriesData).map(c => c.biodiversityIndex),
-      borderColor: 'rgba(70,130,180,1)',
-      backgroundColor: 'rgba(70,130,180,0.3)',
-      fill: true,
-      tension: 0.3,
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: { beginAtZero: true, max: 100 }
-    }
-  }
-});
-
-// --- Atualizar gráficos para um país selecionado (pode personalizar se quiser) ---
-function updateCharts(country) {
-  // Por enquanto só atualiza o título dos gráficos (podemos melhorar)
-  // Pode implementar gráficos dinâmicos aqui!
+  // Clima (temperatura)
+  chartClimate = new Chart(document.createElement("canvas"), {
+    type: "bar",
+    data: {
+      labels: countriesData.map(c => c.name),
+      datasets: [{
+        label: "Temp. média (°C)",
+        data: countriesData.map(c => c.temperature),
+        backgroundColor: "#f39c12",
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } },
+  });
+  document.getElementById("charts").appendChild(chartClimate.canvas);
 }
 
-// --- Inicialização ---
-populateGlobalSpecies();
+function updateCharts(country) {
+  const idx = countriesData.findIndex(c => c.name === country.name);
+  chartCo2.data.datasets[0].backgroundColor = countriesData.map((_, i) => i === idx ? "#f39c12" : "#27ae60");
+  chartCo2.update();
+
+  chartTrees.data.datasets.forEach(ds => {
+    ds.backgroundColor = ds.backgroundColor.map ? ds.backgroundColor.map((c, i) => i === idx ? "#f39c12" : c) : ds.backgroundColor;
+  });
+  chartTrees.update();
+}
+
+function setupSearch() {
+  document.getElementById("search-country").oninput = e => {
+    const q = e.target.value.toLowerCase();
+    markers.forEach((m,i) => {
+      countriesData[i].name.toLowerCase().includes(q) ? m.addTo(map): map.removeLayer(m);
+    });
+  };
+  document.getElementById("search-species").oninput = e => {
+    const q = e.target.value.toLowerCase();
+    countriesData.forEach((c,i) => {
+      const ok = c.species.some(sp => sp.name.toLowerCase().includes(q) || sp.status.toLowerCase().includes(q));
+      ok ? markers[i].addTo(map) : map.removeLayer(markers[i]);
+    });
+  };
+}
+
+function setupDarkMode() {
+  const btn = document.getElementById("mode-toggle");
+  const icon = btn.querySelector("i");
+  btn.onclick = () => {
+    document.body.classList.toggle("dark-mode");
+    icon.classList.toggle("fa-sun");
+    icon.classList.toggle("fa-moon");
+  };
+}
+
+function createLegend() {
+  const legend = document.getElementById("legend");
+  [{"Criticamente em perigo":"#c0392b"},{"Em perigo":"#d35400"},{"Vulnerável":"#e67e22"},{"Pouco preocupante":"#27ae60"}]
+    .forEach(o=>{
+      const label = Object.keys(o)[0], color = o[label];
+      const div = document.createElement("div");
+      div.className = "legend-item";
+      div.innerHTML = `<div class="legend-color" style="background:${color}"></div><span>${label}</span>`;
+      legend.appendChild(div);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initMap();
+  displayGlobalSpecies();
+  createCharts();
+  setupSearch();
+  setupDarkMode();
+  createLegend();
+options: {
+  responsive: true,
+  animation: {
+    duration: 1000,
+    easing: 'easeInOutQuart'
+  }
+}
+   });
